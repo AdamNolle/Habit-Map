@@ -16,6 +16,7 @@
 		BB5D4B20EBD3A96EA719AABF /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 914257ACAF85AA8CC4F6DC59 /* SnapshotTesting */; };
 		C04E762AACE3FF178FEA9021 /* HabitMapCore in Frameworks */ = {isa = PBXBuildFile; productRef = 20081F59EA1F2A1D6E9BA4A7 /* HabitMapCore */; };
 		CD19CEC342E600095D419F79 /* HabitMapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA38D53212FC1844B646528A /* HabitMapApp.swift */; };
+		E15C6799EE4634CD70E13166 /* HabitCellSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E46B5D9C57ADB18D076944 /* HabitCellSnapshotTests.swift */; };
 		F7BA47BD63DFE82CEDA0F62E /* PlaceholderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0935D50555519CEB97A92CD /* PlaceholderTest.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 		83929D2082830E8608F7059A /* HabitMapCoreTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HabitMapCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		918E28AE500178239BCE50AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A693F224D8658BE4AD0629A3 /* HabitMapCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HabitMapCore; path = Packages/HabitMapCore; sourceTree = SOURCE_ROOT; };
+		A9E46B5D9C57ADB18D076944 /* HabitCellSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCellSnapshotTests.swift; sourceTree = "<group>"; };
 		AD925560425AC09D9809C873 /* PixelIconSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelIconSnapshotTests.swift; sourceTree = "<group>"; };
 		BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderTests.swift; sourceTree = "<group>"; };
 		CA38D53212FC1844B646528A /* HabitMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitMapApp.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				EB4431BA3EA255EC3438DD0D /* ColorHexTests.swift */,
+				A9E46B5D9C57ADB18D076944 /* HabitCellSnapshotTests.swift */,
 				6ECD91A1958D5E9519131442 /* PixelFontSnapshotTests.swift */,
 				AD925560425AC09D9809C873 /* PixelIconSnapshotTests.swift */,
 				BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */,
@@ -289,6 +292,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B41D509393C9081266DDB4B2 /* ColorHexTests.swift in Sources */,
+				E15C6799EE4634CD70E13166 /* HabitCellSnapshotTests.swift in Sources */,
 				52A713F8F246F34FAC6683A6 /* PixelFontSnapshotTests.swift in Sources */,
 				477E8365631C9C4FD4778572 /* PixelIconSnapshotTests.swift in Sources */,
 				676FBF409FCB0281DBAEB69B /* PlaceholderTests.swift in Sources */,
