@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcuserdatad
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+
+# Swift Package Manager
+.swiftpm/
+.build/
+Packages/*/.build/
+Packages/*/.swiftpm/
+
+# Snapshot test failures
+**/__Snapshots__/__failed__/
+
+# Coverage
+*.profraw
+*.profdata
+
+# Misc
+*.log
