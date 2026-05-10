@@ -63,6 +63,25 @@ targets:
     dependencies:
       - package: HabitMapCore
 
+  HabitMapCoreTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Packages/HabitMapCore/Tests/HabitMapCoreTests
+        excludes:
+          - "__Snapshots__"
+    dependencies:
+      - package: HabitMapCore
+      - package: SnapshotTesting
+        product: SnapshotTesting
+      - target: HabitMap
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        BUNDLE_LOADER: $(TEST_HOST)
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/HabitMap.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HabitMap
+
   HabitMapUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -72,4 +91,21 @@ targets:
       - target: HabitMap
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: HabitMap
+
+schemes:
+  HabitMap:
+    build:
+      targets:
+        HabitMap: all
+        HabitMapCoreTests: [test]
+        HabitMapUITests: [test]
+    test:
+      targets:
+        - HabitMapCoreTests
+        - HabitMapUITests
+    run:
+      config: Debug
+    archive:
+      config: Release
