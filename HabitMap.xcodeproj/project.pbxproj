@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		477E8365631C9C4FD4778572 /* PixelIconSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD925560425AC09D9809C873 /* PixelIconSnapshotTests.swift */; };
+		52A337AB988DDABEAA639F1E /* PixelRingSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0590221A16B8D6CBE2BEF7A0 /* PixelRingSnapshotTests.swift */; };
 		52A713F8F246F34FAC6683A6 /* PixelFontSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECD91A1958D5E9519131442 /* PixelFontSnapshotTests.swift */; };
 		65FBEA75EF1630BC0FAEFC97 /* HabitMapCore in Frameworks */ = {isa = PBXBuildFile; productRef = 22AF425A965F27DE9A8361EF /* HabitMapCore */; };
 		676FBF409FCB0281DBAEB69B /* PlaceholderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0590221A16B8D6CBE2BEF7A0 /* PixelRingSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelRingSnapshotTests.swift; sourceTree = "<group>"; };
 		25F2C19BE624A35996F3DCEE /* HabitMap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HabitMap.entitlements; sourceTree = "<group>"; };
 		4122B53BF8BC5E405F067E6A /* HabitMapUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HabitMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		666A9CAEF9035E1CB69A370C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 				A9E46B5D9C57ADB18D076944 /* HabitCellSnapshotTests.swift */,
 				6ECD91A1958D5E9519131442 /* PixelFontSnapshotTests.swift */,
 				AD925560425AC09D9809C873 /* PixelIconSnapshotTests.swift */,
+				0590221A16B8D6CBE2BEF7A0 /* PixelRingSnapshotTests.swift */,
 				BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */,
 			);
 			path = HabitMapCoreTests;
@@ -295,6 +298,7 @@
 				E15C6799EE4634CD70E13166 /* HabitCellSnapshotTests.swift in Sources */,
 				52A713F8F246F34FAC6683A6 /* PixelFontSnapshotTests.swift in Sources */,
 				477E8365631C9C4FD4778572 /* PixelIconSnapshotTests.swift in Sources */,
+				52A337AB988DDABEAA639F1E /* PixelRingSnapshotTests.swift in Sources */,
 				676FBF409FCB0281DBAEB69B /* PlaceholderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
