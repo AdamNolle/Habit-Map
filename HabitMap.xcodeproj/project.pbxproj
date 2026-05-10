@@ -15,6 +15,7 @@
 		6542FB6D68F93C49CD535F51 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A6A77B9FAC10693177FCB8 /* HeaderView.swift */; };
 		65FBEA75EF1630BC0FAEFC97 /* HabitMapCore in Frameworks */ = {isa = PBXBuildFile; productRef = 22AF425A965F27DE9A8361EF /* HabitMapCore */; };
 		676FBF409FCB0281DBAEB69B /* PlaceholderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */; };
+		6FC75F9B2B284442AC704AC0 /* PixelButtonSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02921A0BEC8F6BB0C4615565 /* PixelButtonSnapshotTests.swift */; };
 		9B272DE7317EEE170275993F /* TodayFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528A8798A1DAFC93A73B57EF /* TodayFlowUITests.swift */; };
 		AC6A4EFE71F15FF57178E984 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 666A9CAEF9035E1CB69A370C /* Assets.xcassets */; };
 		B1342A8249100E4E31F7FE53 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C8B85F9E459014512D0187 /* TodayView.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02921A0BEC8F6BB0C4615565 /* PixelButtonSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelButtonSnapshotTests.swift; sourceTree = "<group>"; };
 		0590221A16B8D6CBE2BEF7A0 /* PixelRingSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelRingSnapshotTests.swift; sourceTree = "<group>"; };
 		1E12346CC6F002AB6DC0D83C /* RecoveryRateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryRateTests.swift; sourceTree = "<group>"; };
 		25F2C19BE624A35996F3DCEE /* HabitMap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HabitMap.entitlements; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 				EB4431BA3EA255EC3438DD0D /* ColorHexTests.swift */,
 				A9E46B5D9C57ADB18D076944 /* HabitCellSnapshotTests.swift */,
 				6867EB4E03DE850E9B9B67A7 /* HabitModelTests.swift */,
+				02921A0BEC8F6BB0C4615565 /* PixelButtonSnapshotTests.swift */,
 				6ECD91A1958D5E9519131442 /* PixelFontSnapshotTests.swift */,
 				AD925560425AC09D9809C873 /* PixelIconSnapshotTests.swift */,
 				0590221A16B8D6CBE2BEF7A0 /* PixelRingSnapshotTests.swift */,
@@ -334,6 +337,7 @@
 				B41D509393C9081266DDB4B2 /* ColorHexTests.swift in Sources */,
 				E15C6799EE4634CD70E13166 /* HabitCellSnapshotTests.swift in Sources */,
 				1F580AC2C4C83A7BECA2FE35 /* HabitModelTests.swift in Sources */,
+				6FC75F9B2B284442AC704AC0 /* PixelButtonSnapshotTests.swift in Sources */,
 				52A713F8F246F34FAC6683A6 /* PixelFontSnapshotTests.swift in Sources */,
 				477E8365631C9C4FD4778572 /* PixelIconSnapshotTests.swift in Sources */,
 				52A337AB988DDABEAA639F1E /* PixelRingSnapshotTests.swift in Sources */,
