@@ -5,7 +5,9 @@ import HabitMapCore
 
 struct HabitRow: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var repo: HabitRepository
     @Bindable var habit: Habit
+    @State private var showDetail = false
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
@@ -42,6 +44,21 @@ struct HabitRow: View {
         .padding(.vertical, DesignTokens.Spacing.md)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 2))
+        .contextMenu {
+            Button {
+                showDetail = true
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            Button(role: .destructive) {
+                try? repo.deleteHabit(habit)
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+        .sheet(isPresented: $showDetail) {
+            HabitDetailView(habit: habit).environmentObject(repo)
+        }
     }
 
     private var subtitle: String {

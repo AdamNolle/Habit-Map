@@ -3,6 +3,7 @@ import HabitMapCore
 
 struct HeaderView: View {
     let page: HabitPage
+    @State private var showPages = false
 
     var body: some View {
         HStack(alignment: .top) {
@@ -16,10 +17,18 @@ struct HeaderView: View {
                     .foregroundColor(DesignTokens.Surface.mutedText)
             }
             Spacer()
-            PixelIcon(.grid, color: DesignTokens.Surface.mutedText, size: 24)
+            Button {
+                showPages = true
+            } label: {
+                PixelIcon(.grid, color: DesignTokens.Surface.mutedText, size: 24)
+            }
+            .accessibilityLabel("Manage pages")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.top, DesignTokens.Spacing.lg)
+        .sheet(isPresented: $showPages) {
+            PagesManagerView()
+        }
     }
 
     private var subtitleText: String {

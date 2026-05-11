@@ -5,10 +5,13 @@ import HabitMapCore
 @main
 struct HabitMapApp: App {
     let container: ModelContainer
+    @StateObject private var repo: HabitRepository
 
     init() {
         do {
-            container = try PersistenceController.makeContainer(enableCloudKit: false)
+            let container = try PersistenceController.makeContainer(enableCloudKit: false)
+            self.container = container
+            _repo = StateObject(wrappedValue: HabitRepository(context: container.mainContext))
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -17,6 +20,7 @@ struct HabitMapApp: App {
     var body: some Scene {
         WindowGroup {
             TodayView()
+                .environmentObject(repo)
                 .task {
                     do {
                         try await MainActor.run {
