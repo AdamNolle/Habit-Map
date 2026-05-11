@@ -55,13 +55,27 @@ struct HabitMapApp: App {
 struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var sync: HealthSyncService
+    @State private var activeTab: HabitMapTab = .today
 
     var body: some View {
-        TodayView()
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active {
-                    Task { await sync.syncToday() }
+        ZStack(alignment: .bottom) {
+            Group {
+                switch activeTab {
+                case .today: TodayView()
+                case .map:   MapView()
+                case .stats: ComingSoonView(title: "STATS", plan: "PLAN 05")
+                case .setup: ComingSoonView(title: "SETUP", plan: "PLAN 06")
                 }
             }
+            .padding(.bottom, 80)
+
+            TabBar(active: activeTab) { tab in activeTab = tab }
+        }
+        .background(DesignTokens.Surface.bg)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await sync.syncToday() }
+            }
+        }
     }
 }

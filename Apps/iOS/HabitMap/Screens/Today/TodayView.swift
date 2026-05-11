@@ -41,16 +41,17 @@ struct TodayView: View {
                              activeIndex: active.firstIndex { $0.id == selectedPageID } ?? 0,
                              activeColor: active.first { $0.id == selectedPageID }?.accentColor
                                               ?? DesignTokens.Surface.mutedText)
+                        .padding(.bottom, 8)
                 }
-                TabBar(active: .today)
             }
+            .allowsHitTesting(false)
         }
         .overlay(alignment: .bottomTrailing) {
             if let id = selectedPageID,
                let page = pages.first(where: { $0.id == id }) {
                 FAB(accent: page.accentColor) { wizardPage = page }
                     .padding(.trailing, DesignTokens.Spacing.lg)
-                    .padding(.bottom, 96)
+                    .padding(.bottom, 16)
                     .accessibilityLabel("Add habit to \(page.name)")
             }
         }
