@@ -45,6 +45,8 @@ targets:
         UIBackgroundModes:
           - fetch
           - processing
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.adam.habitmap.health-refresh
         NSHealthShareUsageDescription: "Habit Map reads workouts, steps, mindful minutes, sleep, and stand hours to auto-fill habits you've linked to Apple Health. We never store the raw values — only whether your goal was hit."
         NSHealthUpdateUsageDescription: "Not used. Habit Map is read-only for Apple Health."
     entitlements:
@@ -54,6 +56,8 @@ targets:
           - iCloud.com.adam.habitmap
         com.apple.developer.icloud-services:
           - CloudKit
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adam.habitmap
