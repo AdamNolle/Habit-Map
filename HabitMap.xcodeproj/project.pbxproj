@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02D3450167751B190DBE0EF1 /* HabitWizardUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3971B2DF635BC751B013184 /* HabitWizardUITests.swift */; };
 		1F580AC2C4C83A7BECA2FE35 /* HabitModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6867EB4E03DE850E9B9B67A7 /* HabitModelTests.swift */; };
 		357D4F8FDEFE767EE63E9452 /* AddHabitStep2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E8578D54CAAF099033B10 /* AddHabitStep2View.swift */; };
 		35CEFC2C0F66B1CEB4D8EE48 /* EmojiPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF46C5C2A08D368DCAD9721C /* EmojiPickerTests.swift */; };
@@ -42,6 +43,7 @@
 		E4A006FF7F05B265EF3D4D57 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8A3DDBD88BF74A635D82D8 /* TabBar.swift */; };
 		F82555E731C9E9C11900E5EF /* AccentSwatchPickerSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 991577090BA44CC552EA9580 /* AccentSwatchPickerSnapshotTests.swift */; };
 		F934E0E95408BCCA8E7B63D2 /* HabitRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1325189BA3E27ED7993C4 /* HabitRow.swift */; };
+		FA8646926E5751D86396D1E3 /* PageCRUDUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0755338E934F3AFEE78FF /* PageCRUDUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +86,7 @@
 		90544161546A5C198B643DE5 /* HabitDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailView.swift; sourceTree = "<group>"; };
 		918E28AE500178239BCE50AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		991577090BA44CC552EA9580 /* AccentSwatchPickerSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentSwatchPickerSnapshotTests.swift; sourceTree = "<group>"; };
+		A3971B2DF635BC751B013184 /* HabitWizardUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitWizardUITests.swift; sourceTree = "<group>"; };
 		A693F224D8658BE4AD0629A3 /* HabitMapCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HabitMapCore; path = Packages/HabitMapCore; sourceTree = SOURCE_ROOT; };
 		A9E46B5D9C57ADB18D076944 /* HabitCellSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCellSnapshotTests.swift; sourceTree = "<group>"; };
 		AD8A3DDBD88BF74A635D82D8 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
@@ -94,6 +97,7 @@
 		C714E17DF87A531BC092CE1C /* PixelToggleSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelToggleSnapshotTests.swift; sourceTree = "<group>"; };
 		CA202B6F37F514E81B92D0A2 /* WeekdayPickerSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekdayPickerSnapshotTests.swift; sourceTree = "<group>"; };
 		CA38D53212FC1844B646528A /* HabitMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitMapApp.swift; sourceTree = "<group>"; };
+		D5F0755338E934F3AFEE78FF /* PageCRUDUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageCRUDUITests.swift; sourceTree = "<group>"; };
 		E747DC1AAA9A4FBA666A5EB1 /* HabitRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRepositoryTests.swift; sourceTree = "<group>"; };
 		E9A6A77B9FAC10693177FCB8 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		EB4431BA3EA255EC3438DD0D /* ColorHexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorHexTests.swift; sourceTree = "<group>"; };
@@ -136,6 +140,8 @@
 		189AB5089FBC98992EE1932A /* HabitMapUITests */ = {
 			isa = PBXGroup;
 			children = (
+				A3971B2DF635BC751B013184 /* HabitWizardUITests.swift */,
+				D5F0755338E934F3AFEE78FF /* PageCRUDUITests.swift */,
 				528A8798A1DAFC93A73B57EF /* TodayFlowUITests.swift */,
 			);
 			path = HabitMapUITests;
@@ -447,6 +453,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02D3450167751B190DBE0EF1 /* HabitWizardUITests.swift in Sources */,
+				FA8646926E5751D86396D1E3 /* PageCRUDUITests.swift in Sources */,
 				9B272DE7317EEE170275993F /* TodayFlowUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
