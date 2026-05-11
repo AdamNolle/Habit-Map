@@ -63,7 +63,7 @@ struct RootView: View {
                 switch activeTab {
                 case .today: TodayView()
                 case .map:   MapView()
-                case .stats: ComingSoonView(title: "STATS", plan: "PLAN 05")
+                case .stats: InsightsView()
                 case .setup: ComingSoonView(title: "SETUP", plan: "PLAN 06")
                 }
             }
