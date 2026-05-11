@@ -17,6 +17,7 @@ struct MapView: View {
                 PixelText("HEAT MAP", pixelSize: 4, color: accent)
                     .padding(.horizontal, DesignTokens.Spacing.lg)
                     .padding(.top, DesignTokens.Spacing.lg)
+                    .accessibilityLabel("HEAT MAP")
                     .accessibilityAddTraits(.isHeader)
 
                 filterChips
