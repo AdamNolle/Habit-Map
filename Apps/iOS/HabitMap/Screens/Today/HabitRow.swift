@@ -6,8 +6,10 @@ import HabitMapCore
 struct HabitRow: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var repo: HabitRepository
+    @EnvironmentObject private var sync: HealthSyncService
     @Bindable var habit: Habit
     @State private var showDetail = false
+    @State private var healthAuth: HealthAuthState = .undetermined
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
@@ -45,23 +47,38 @@ struct HabitRow: View {
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 2))
         .contextMenu {
-            Button {
-                showDetail = true
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
+            Button { showDetail = true } label: { Label("Edit", systemImage: "pencil") }
             Button(role: .destructive) {
                 try? repo.deleteHabit(habit)
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
+            } label: { Label("Delete", systemImage: "trash") }
         }
         .sheet(isPresented: $showDetail) {
             HabitDetailView(habit: habit).environmentObject(repo)
         }
+        .task {
+            if habit.type == .autoHealth, let metric = habit.healthMetric {
+                healthAuth = await sync.provider.authState(for: [metric])
+            }
+        }
     }
 
     private var subtitle: String {
+        if habit.type == .autoHealth {
+            switch healthAuth {
+            case .unavailable:
+                return "HEALTH UNAVAILABLE"
+            case .undetermined:
+                return "TAP TO AUTHORIZE"
+            case .denied(let n) where n < 2:
+                return "TAP TO AUTHORIZE"
+            case .denied:
+                return "SWITCH TO MANUAL?"
+            case .authorized:
+                let reps = habit.completion(on: Date())?.reps ?? 0
+                let goal = Int(habit.healthGoal ?? Double(habit.targetReps))
+                return "\(reps) / \(goal)"
+            }
+        }
         switch habit.type {
         case .manualOnce:
             return habit.progressFraction(on: Date()) >= 1.0 ? "DONE" : "TAP TO LOG"
@@ -69,15 +86,17 @@ struct HabitRow: View {
             let reps = habit.completion(on: Date())?.reps ?? 0
             return "\(reps) / \(habit.targetReps)"
         case .autoHealth:
-            let reps = habit.completion(on: Date())?.reps ?? 0
-            let goal = Int(habit.healthGoal ?? Double(habit.targetReps))
-            return "\(reps) / \(goal)"
+            return ""
         case .inverse:
             return (habit.completion(on: Date())?.slipped == true) ? "SLIPPED" : "CLEAN"
         }
     }
 
     private func handleTap() {
+        if habit.type == .autoHealth {
+            handleAutoHealthTap()
+            return
+        }
         let today = Date.startOfToday()
         let existing = habit.completion(on: today)
         switch habit.type {
@@ -107,5 +126,48 @@ struct HabitRow: View {
         }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         try? modelContext.save()
+    }
+
+    private func handleAutoHealthTap() {
+        guard let metric = habit.healthMetric else { return }
+        switch healthAuth {
+        case .undetermined:
+            Task {
+                do {
+                    let newState = try await sync.provider.requestAuthorization(for: [metric])
+                    healthAuth = newState
+                    if case .authorized = newState {
+                        await sync.syncHabit(habit)
+                    } else if case .denied = newState {
+                        healthAuth = .denied(timesDenied: 1)
+                    }
+                } catch {
+                    healthAuth = .denied(timesDenied: 1)
+                }
+            }
+        case .denied(let n) where n < 2:
+            Task {
+                do {
+                    let newState = try await sync.provider.requestAuthorization(for: [metric])
+                    healthAuth = newState
+                    if case .authorized = newState {
+                        await sync.syncHabit(habit)
+                    } else {
+                        healthAuth = .denied(timesDenied: n + 1)
+                    }
+                } catch {
+                    healthAuth = .denied(timesDenied: n + 1)
+                }
+            }
+        case .denied:
+            // Second denial: convert to manual.
+            habit.type = .manualOnce
+            habit.healthMetric = nil
+            try? modelContext.save()
+        case .authorized:
+            Task { await sync.syncHabit(habit) }
+        case .unavailable:
+            break
+        }
     }
 }

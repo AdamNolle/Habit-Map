@@ -1,4 +1,5 @@
 import SwiftUI
+import HealthKit
 import HabitMapCore
 
 struct AddHabitStep2View: View {
@@ -14,6 +15,9 @@ struct AddHabitStep2View: View {
                 typeRow(.manualOnce, label: "ONCE A DAY", subtitle: "Tap once when done")
                 typeRow(.manualMultiple, label: "MULTIPLE TIMES", subtitle: "Tap N times to hit target")
                 typeRow(.inverse, label: "AVOID", subtitle: "Default complete unless slipped")
+                if HKHealthStore.isHealthDataAvailable() {
+                    typeRow(.autoHealth, label: "AUTO-FILL FROM HEALTH", subtitle: "Apple Health populates progress")
+                }
             }
 
             if draft.type == .manualMultiple {
@@ -30,6 +34,10 @@ struct AddHabitStep2View: View {
                         }.frame(width: 60)
                     }
                 }
+            } else if draft.type == .autoHealth {
+                MetricPickerView(metric: $draft.healthMetric,
+                                 goal: $draft.healthGoal,
+                                 accent: Color(hex: draft.accentHex))
             }
         }
     }

@@ -11,6 +11,8 @@ struct WizardDraft {
     var restDayMask: Int8 = 0
     var reminderEnabled: Bool = false
     var reminderTime: Date = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date()) ?? Date()
+    var healthMetric: HealthMetric? = nil
+    var healthGoal: Double = 10000
 }
 
 struct AddHabitWizardView: View {
@@ -66,7 +68,9 @@ struct AddHabitWizardView: View {
     private var canAdvance: Bool {
         switch step {
         case 0: return !draft.name.trimmingCharacters(in: .whitespaces).isEmpty
-        case 1: return draft.targetReps >= 1 || draft.type == .inverse || draft.type == .manualOnce
+        case 1:
+            if draft.type == .autoHealth { return draft.healthMetric != nil }
+            return draft.targetReps >= 1 || draft.type == .inverse || draft.type == .manualOnce
         default: return draft.weekdayMask != 0
         }
     }
@@ -76,17 +80,23 @@ struct AddHabitWizardView: View {
         switch draft.type {
         case .manualOnce: reps = 1
         case .inverse: reps = 0
-        case .manualMultiple, .autoHealth: reps = draft.targetReps
+        case .manualMultiple: reps = draft.targetReps
+        case .autoHealth: reps = Int(draft.healthGoal)
         }
-        try? repo.createHabit(name: draft.name,
-                              emoji: draft.emoji,
-                              accentHex: draft.accentHex,
-                              type: draft.type,
-                              targetReps: reps,
-                              weekdayMask: draft.weekdayMask,
-                              restDayMask: draft.restDayMask,
-                              reminderTime: draft.reminderEnabled ? draft.reminderTime : nil,
-                              on: page)
+        let habit = try? repo.createHabit(name: draft.name,
+                                          emoji: draft.emoji,
+                                          accentHex: draft.accentHex,
+                                          type: draft.type,
+                                          targetReps: reps,
+                                          weekdayMask: draft.weekdayMask,
+                                          restDayMask: draft.restDayMask,
+                                          reminderTime: draft.reminderEnabled ? draft.reminderTime : nil,
+                                          on: page)
+        if draft.type == .autoHealth, let habit {
+            habit.healthMetric = draft.healthMetric
+            habit.healthGoal = draft.healthGoal
+            try? repo.context.save()
+        }
         dismiss()
     }
 }

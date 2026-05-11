@@ -20,6 +20,7 @@
 		5D64CBC88B5732ED6E3DDD3C /* AddPageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4035F91D0D872B214A6A6720 /* AddPageSheet.swift */; };
 		6542FB6D68F93C49CD535F51 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A6A77B9FAC10693177FCB8 /* HeaderView.swift */; };
 		65FBEA75EF1630BC0FAEFC97 /* HabitMapCore in Frameworks */ = {isa = PBXBuildFile; productRef = 22AF425A965F27DE9A8361EF /* HabitMapCore */; };
+		666D8F95B34FEF5F7F6EB69F /* MetricPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47362853FE6DBDEAC77CE0C4 /* MetricPickerView.swift */; };
 		676FBF409FCB0281DBAEB69B /* PlaceholderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */; };
 		6FC75F9B2B284442AC704AC0 /* PixelButtonSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02921A0BEC8F6BB0C4615565 /* PixelButtonSnapshotTests.swift */; };
 		7768E66E179B3BE8C6203A75 /* HabitRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E747DC1AAA9A4FBA666A5EB1 /* HabitRepositoryTests.swift */; };
@@ -73,6 +74,7 @@
 		4035F91D0D872B214A6A6720 /* AddPageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPageSheet.swift; sourceTree = "<group>"; };
 		40E2ADD1B46611B303866BC1 /* EditPageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPageSheet.swift; sourceTree = "<group>"; };
 		4122B53BF8BC5E405F067E6A /* HabitMapUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HabitMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		47362853FE6DBDEAC77CE0C4 /* MetricPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricPickerView.swift; sourceTree = "<group>"; };
 		50D1325189BA3E27ED7993C4 /* HabitRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRow.swift; sourceTree = "<group>"; };
 		527E2C9D60C3E96AE2E3B303 /* HealthSyncServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSyncServiceTests.swift; sourceTree = "<group>"; };
 		528A8798A1DAFC93A73B57EF /* TodayFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayFlowUITests.swift; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 				5A0660D41AD316801E01AB09 /* AddHabitStep3View.swift */,
 				6924FF76EAC50878CA3AE67B /* AddHabitWizardView.swift */,
 				90544161546A5C198B643DE5 /* HabitDetailView.swift */,
+				47362853FE6DBDEAC77CE0C4 /* MetricPickerView.swift */,
 			);
 			path = Habit;
 			sourceTree = "<group>";
@@ -445,6 +448,7 @@
 				CD19CEC342E600095D419F79 /* HabitMapApp.swift in Sources */,
 				F934E0E95408BCCA8E7B63D2 /* HabitRow.swift in Sources */,
 				6542FB6D68F93C49CD535F51 /* HeaderView.swift in Sources */,
+				666D8F95B34FEF5F7F6EB69F /* MetricPickerView.swift in Sources */,
 				39450D2EEF7DE83C4F7C328D /* PageContentView.swift in Sources */,
 				B93195FFBDD2E660042DA1B2 /* PagesManagerView.swift in Sources */,
 				E4A006FF7F05B265EF3D4D57 /* TabBar.swift in Sources */,
