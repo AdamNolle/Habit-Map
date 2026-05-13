@@ -27,7 +27,21 @@ final class PixelFontSnapshotTests: XCTestCase {
     }
 
     func test_unknownCharFallsBackToBlock() {
-        let rows = PixelFontGlyphs.rows(for: "?") ?? PixelFontGlyphs.fallback
+        let rows = PixelFontGlyphs.rows(for: "\u{2603}") ?? PixelFontGlyphs.fallback
         XCTAssertEqual(rows, PixelFontGlyphs.fallback)
+    }
+
+    func test_plusGlyph_exists() {
+        XCTAssertNotNil(PixelFontGlyphs.rows(for: "+"))
+    }
+
+    func test_minusGlyph_exists() {
+        XCTAssertNotNil(PixelFontGlyphs.rows(for: "-"))
+    }
+
+    func test_punctuationGlyphs_exist() {
+        for char in Array("!?',()<>") {
+            XCTAssertNotNil(PixelFontGlyphs.rows(for: char), "Missing glyph for \(char)")
+        }
     }
 }
