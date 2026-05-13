@@ -7,9 +7,14 @@ struct HabitRow: View {
     @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var repo: HabitRepository
     @EnvironmentObject private var sync: HealthSyncService
+    @Query private var allSettings: [UserSettings]
     @Bindable var habit: Habit
     @State private var showDetail = false
     @State private var healthAuth: HealthAuthState = .undetermined
+
+    private var hapticsEnabled: Bool {
+        allSettings.first?.hapticsEnabled ?? true
+    }
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
@@ -124,7 +129,9 @@ struct HabitRow: View {
         case .autoHealth:
             return
         }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        if hapticsEnabled {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
         try? modelContext.save()
     }
 

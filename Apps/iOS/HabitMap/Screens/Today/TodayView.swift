@@ -4,6 +4,7 @@ import HabitMapCore
 
 struct TodayView: View {
     @Query(sort: \HabitPage.sortOrder) private var pages: [HabitPage]
+    @Query private var allSettings: [UserSettings]
     @EnvironmentObject private var repo: HabitRepository
     @State private var selectedPageID: UUID?
     @State private var wizardPage: HabitPage?
@@ -24,7 +25,15 @@ struct TodayView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .onAppear {
-                    if selectedPageID == nil { selectedPageID = pages.filter({ !$0.isArchived }).first?.id }
+                    if selectedPageID == nil {
+                        let active = pages.filter { !$0.isArchived }
+                        if let preferred = allSettings.first?.defaultPageId,
+                           active.contains(where: { $0.id == preferred }) {
+                            selectedPageID = preferred
+                        } else {
+                            selectedPageID = active.first?.id
+                        }
+                    }
                 }
                 .onChange(of: pages) { _, newPages in
                     let active = newPages.filter { !$0.isArchived }
