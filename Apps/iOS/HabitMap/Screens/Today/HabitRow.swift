@@ -17,20 +17,17 @@ struct HabitRow: View {
     }
 
     var body: some View {
-        HStack(spacing: DesignTokens.Spacing.md) {
+        HStack(spacing: DesignTokens.Spacing.sm) {
             Text(habit.emoji)
                 .font(.system(size: 18))
-                .frame(width: 30, height: 30)
+                .frame(width: 28, height: 28)
                 .background(DesignTokens.Surface.tile)
                 .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 1))
 
             VStack(alignment: .leading, spacing: 4) {
-                PixelText(habit.name, pixelSize: 2, color: habit.accentColor)
+                MonoText(habit.name, size: .body, weight: .heavy, color: habit.accentColor)
                     .accessibilityLabel(habit.name)
-                Text(subtitle)
-                    .font(.system(.caption2, design: .monospaced).weight(.heavy))
-                    .tracking(1.0)
-                    .foregroundColor(DesignTokens.Surface.mutedText)
+                MonoText.label(subtitle)
                 MiniHeatmap(habit: habit)
             }
 
@@ -48,7 +45,7 @@ struct HabitRow: View {
                 .accessibilityAddTraits(.isButton)
         }
         .padding(.horizontal, DesignTokens.Spacing.md)
-        .padding(.vertical, DesignTokens.Spacing.md)
+        .padding(.vertical, DesignTokens.Spacing.sm)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 2))
         .contextMenu {

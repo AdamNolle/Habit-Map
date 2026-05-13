@@ -12,6 +12,7 @@ public struct PixelButton: View {
     let accent: Color
     let action: () -> Void
     let isEnabled: Bool
+    @GestureState private var pressed: Bool = false
 
     public init(_ title: String,
                 style: PixelButtonStyle = .primary,
@@ -27,15 +28,21 @@ public struct PixelButton: View {
 
     public var body: some View {
         Button(action: { if isEnabled { action() } }) {
-            PixelText(title, pixelSize: 3, color: textColor)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+            MonoText.action(title, color: textColor)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
                 .frame(maxWidth: .infinity)
                 .background(fillColor)
                 .overlay(Rectangle().stroke(borderColor, lineWidth: 2))
         }
         .buttonStyle(.plain)
         .opacity(isEnabled ? 1.0 : 0.4)
+        .scaleEffect(pressed ? 0.96 : 1.0)
+        .animation(.spring(response: 0.22, dampingFraction: 0.6), value: pressed)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .updating($pressed) { _, state, _ in state = isEnabled }
+        )
         .accessibilityLabel(title)
         .accessibilityAddTraits(.isButton)
     }

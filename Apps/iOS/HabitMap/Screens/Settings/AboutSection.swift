@@ -3,9 +3,11 @@ import HabitMapCore
 
 struct AboutSection: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            PixelText("ABOUT", pixelSize: 3, color: DesignTokens.Accent.classicGreen)
+        VStack(alignment: .leading, spacing: 6) {
+            MonoText("ABOUT", size: .caption, weight: .heavy,
+                     color: DesignTokens.Accent.classicGreen)
                 .padding(.top, 8)
+                .padding(.leading, 2)
             row(label: "VERSION", value: HabitMapCore.version)
             row(label: "BUILD", value: buildNumber)
             navRow(label: "PRIVACY POLICY") {
@@ -22,13 +24,11 @@ struct AboutSection: View {
 
     private func row(label: String, value: String) -> some View {
         HStack {
-            PixelText(label, pixelSize: 2, color: DesignTokens.Surface.mutedText)
+            MonoText.label(label)
             Spacer()
-            Text(value)
-                .font(.system(.body, design: .monospaced).weight(.heavy))
-                .foregroundColor(.white)
+            MonoText(value, size: .body, weight: .heavy, color: .white)
         }
-        .padding(12)
+        .padding(10)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
     }
@@ -36,11 +36,14 @@ struct AboutSection: View {
     private func navRow(label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
-                PixelText(label, pixelSize: 2, color: DesignTokens.Accent.classicGreen)
+                MonoText(label, size: .footnote, weight: .heavy,
+                         color: DesignTokens.Accent.classicGreen)
                 Spacer()
-                PixelText(">", pixelSize: 2, color: DesignTokens.Accent.classicGreen)
+                Image(systemName: "arrow.up.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(DesignTokens.Accent.classicGreen)
             }
-            .padding(12)
+            .padding(10)
             .background(DesignTokens.Surface.card)
             .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
         }

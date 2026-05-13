@@ -21,15 +21,15 @@ public struct StreakCard: View {
             divider
             cell(label: "BEST", value: "\(bestStreak)")
         }
-        .padding(12)
+        .padding(10)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(accent, lineWidth: 2))
     }
 
     private func cell(label: String, value: String) -> some View {
         VStack(spacing: 4) {
-            PixelText(value, pixelSize: 4, color: accent)
-            PixelText(label, pixelSize: 2, color: DesignTokens.Surface.mutedText)
+            MonoText(value, size: .title, weight: .heavy, color: accent)
+            MonoText.label(label)
         }
         .frame(maxWidth: .infinity)
     }

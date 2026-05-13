@@ -7,14 +7,11 @@ struct HeaderView: View {
 
     var body: some View {
         HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 6) {
-                PixelText(page.name, pixelSize: 4, color: page.accentColor)
+            VStack(alignment: .leading, spacing: 4) {
+                PixelText(page.name, pixelSize: 3, color: page.accentColor)
                     .accessibilityLabel(page.name)
                     .accessibilityAddTraits(.isHeader)
-                Text(subtitleText)
-                    .font(.system(.caption2, design: .monospaced).weight(.heavy))
-                    .tracking(1.0)
-                    .foregroundColor(DesignTokens.Surface.mutedText)
+                MonoText.label(subtitleText)
             }
             Spacer()
             Button {

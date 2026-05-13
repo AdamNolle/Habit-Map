@@ -8,19 +8,17 @@ public struct InsightCard: View {
     }
 
     public var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 10) {
             badge
-            VStack(alignment: .leading, spacing: 6) {
-                PixelText(insight.title, pixelSize: 2, color: accent)
-                Text(insight.body)
-                    .font(.system(.callout, design: .monospaced))
-                    .foregroundColor(DesignTokens.Surface.mutedText)
-                    .multilineTextAlignment(.leading)
+            VStack(alignment: .leading, spacing: 4) {
+                MonoText(insight.title, size: .footnote, weight: .heavy, color: accent)
+                MonoText(insight.body, size: .body, weight: .regular,
+                         color: DesignTokens.Surface.mutedText)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
         }
-        .padding(12)
+        .padding(10)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(accent, lineWidth: 2))
         .accessibilityElement(children: .combine)
@@ -46,10 +44,10 @@ public struct InsightCard: View {
         }()
         Rectangle()
             .fill(bg)
-            .frame(width: 28, height: 28)
+            .frame(width: 24, height: 24)
             .overlay(Rectangle().stroke(bg.darker(by: 0.2), lineWidth: 2))
             .overlay(
-                PixelText(badgeChar, pixelSize: 3, color: .black)
+                PixelText(badgeChar, pixelSize: 2, color: .black)
             )
     }
 

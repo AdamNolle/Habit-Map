@@ -46,12 +46,11 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
             try? await scheduler.schedule(ScheduledNotification(
                 identifier: "habitmap.weekly-reflection",
                 title: title, body: body,
-                weekday: 1,        // Sunday
+                weekday: 1,
                 hour: 20, minute: 0
             ))
         }
 
-        // Per-habit reminders
         let pages = (try? repository.fetchPages()) ?? []
         for page in pages {
             for habit in (page.habits ?? []) {
@@ -69,7 +68,6 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
         }
     }
 
-    /// Schedule a per-habit reminder if reminderTime is set; cancel otherwise.
     func scheduleHabit(_ habit: Habit, settings: UserSettings? = nil) async {
         let auth = await scheduler.authState()
         guard auth == .authorized else { return }
@@ -100,7 +98,6 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
         case .archived, .deleted:
             await cancelHabit(habit)
         }
-        // Recalculate daily-reminder pending count
         await reschedule()
     }
 
@@ -108,7 +105,6 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
         "habitmap.habit.\(id.uuidString)"
     }
 
-    /// Parses our identifier scheme. Returns a habit UUID for habit-scoped notifications, nil for app-level.
     public static func parseHabitID(from identifier: String) -> UUID? {
         let prefix = "habitmap.habit."
         guard identifier.hasPrefix(prefix) else { return nil }
@@ -210,32 +206,45 @@ struct RootView: View {
     @State private var activeTab: HabitMapTab = .today
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                switch activeTab {
-                case .today: TodayView()
-                case .map:   MapView()
-                case .stats: InsightsView()
-                case .setup: SettingsView()
+        TabView(selection: $activeTab) {
+            TodayView()
+                .tag(HabitMapTab.today)
+                .tabItem {
+                    Label("Today", systemImage: "house.fill")
                 }
-            }
-            .padding(.bottom, 80)
 
-            TabBar(active: activeTab) { tab in
-                activeTab = tab
-                if tab == .setup {
-                    Task { await notifications.requestPermissionIfNeeded() }
+            MapView()
+                .tag(HabitMapTab.map)
+                .tabItem {
+                    Label("Map", systemImage: "square.grid.3x3.fill")
                 }
-            }
+
+            InsightsView()
+                .tag(HabitMapTab.stats)
+                .tabItem {
+                    Label("Stats", systemImage: "chart.bar.fill")
+                }
+
+            SettingsView()
+                .tag(HabitMapTab.setup)
+                .tabItem {
+                    Label("Setup", systemImage: "gearshape.fill")
+                }
         }
-        .background(DesignTokens.Surface.bg)
+        .tint(DesignTokens.Accent.classicGreen)
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { await sync.syncToday() }
             }
         }
+        .onChange(of: activeTab) { _, new in
+            if new == .setup {
+                Task { await notifications.requestPermissionIfNeeded() }
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .habitMapNotificationTapped)) { _ in
             activeTab = .today
         }
+        .preferredColorScheme(.dark)
     }
 }

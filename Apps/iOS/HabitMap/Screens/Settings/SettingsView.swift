@@ -15,8 +15,8 @@ struct SettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
-                PixelText("SETTINGS", pixelSize: 4, color: DesignTokens.Accent.classicGreen)
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
+                PixelText("SETTINGS", pixelSize: 3, color: DesignTokens.Accent.classicGreen)
                     .accessibilityLabel("SETTINGS")
                     .accessibilityAddTraits(.isHeader)
 
@@ -35,7 +35,7 @@ struct SettingsView: View {
 
                 AboutSection()
             }
-            .padding(DesignTokens.Spacing.lg)
+            .padding(DesignTokens.Spacing.md)
         }
         .background(DesignTokens.Surface.bg)
         .task {
@@ -86,7 +86,6 @@ struct SettingsView: View {
 
     private func performReset() {
         try? repo.deleteAll(scope: resetScope == .everything ? .everything : .archivedOnly)
-        // After everything reset, settings record is gone; clear local reference.
         if resetScope == .everything {
             settings = nil
         }
@@ -105,7 +104,7 @@ private struct SettingsBody: View {
     let onSettingsChanged: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
             forgivenessSection
             notificationsSection
             pagesSection
@@ -115,7 +114,7 @@ private struct SettingsBody: View {
     }
 
     private var forgivenessSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             sectionHeader("FORGIVENESS")
             ToggleRow(label: "SHOW RECOVERY RATE",
                       isOn: $settings.showRecoveryRate)
@@ -129,10 +128,10 @@ private struct SettingsBody: View {
     }
 
     private var notificationsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             sectionHeader("NOTIFICATIONS")
             HStack {
-                PixelText("TONE", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                MonoText.label("TONE")
                 Spacer()
                 Picker("", selection: Binding(
                     get: { settings.notificationTone },
@@ -143,7 +142,7 @@ private struct SettingsBody: View {
                 .pickerStyle(.segmented)
                 .frame(width: 180)
             }
-            .padding(12)
+            .padding(10)
             .background(DesignTokens.Surface.card)
             .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
 
@@ -161,7 +160,7 @@ private struct SettingsBody: View {
                         }))
             if let time = settings.dailyReminderTime {
                 HStack {
-                    PixelText("TIME", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    MonoText.label("TIME")
                     Spacer()
                     DatePicker("", selection: Binding(
                         get: { time },
@@ -170,7 +169,7 @@ private struct SettingsBody: View {
                         .datePickerStyle(.compact)
                         .labelsHidden()
                 }
-                .padding(12)
+                .padding(10)
                 .background(DesignTokens.Surface.card)
                 .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
             }
@@ -186,15 +185,18 @@ private struct SettingsBody: View {
     }
 
     private var pagesSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             sectionHeader("PAGES")
             Button { showPages = true } label: {
                 HStack {
-                    PixelText("MANAGE PAGES", pixelSize: 2, color: DesignTokens.Accent.classicGreen)
+                    MonoText("MANAGE PAGES", size: .footnote, weight: .heavy,
+                             color: DesignTokens.Accent.classicGreen)
                     Spacer()
-                    PixelText(">", pixelSize: 2, color: DesignTokens.Accent.classicGreen)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(DesignTokens.Accent.classicGreen)
                 }
-                .padding(12)
+                .padding(10)
                 .background(DesignTokens.Surface.card)
                 .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
             }
@@ -202,7 +204,7 @@ private struct SettingsBody: View {
 
             if !pages.isEmpty {
                 HStack {
-                    PixelText("DEFAULT PAGE", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    MonoText.label("DEFAULT PAGE")
                     Spacer()
                     Picker("", selection: Binding(
                         get: { settings.defaultPageId ?? pages.first?.id },
@@ -214,7 +216,7 @@ private struct SettingsBody: View {
                     .labelsHidden()
                     .tint(DesignTokens.Accent.classicGreen)
                 }
-                .padding(12)
+                .padding(10)
                 .background(DesignTokens.Surface.card)
                 .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
             }
@@ -222,7 +224,7 @@ private struct SettingsBody: View {
     }
 
     private var dataSyncSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             sectionHeader("DATA · SYNC")
             ToggleRow(label: "ICLOUD SYNC",
                       isOn: $settings.iCloudSyncEnabled)
@@ -233,17 +235,20 @@ private struct SettingsBody: View {
     }
 
     private var dangerZoneSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             sectionHeader("DANGER ZONE")
             Button {
                 resetStep = .scope
             } label: {
                 HStack {
-                    PixelText("RESET ALL DATA", pixelSize: 2, color: DesignTokens.Surface.miss)
+                    MonoText("RESET ALL DATA", size: .footnote, weight: .heavy,
+                             color: DesignTokens.Surface.miss)
                     Spacer()
-                    PixelText(">", pixelSize: 2, color: DesignTokens.Surface.miss)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(DesignTokens.Surface.miss)
                 }
-                .padding(12)
+                .padding(10)
                 .background(DesignTokens.Surface.card)
                 .overlay(Rectangle().stroke(DesignTokens.Surface.miss, lineWidth: 2))
             }
@@ -253,16 +258,18 @@ private struct SettingsBody: View {
     }
 
     private func sectionHeader(_ text: String) -> some View {
-        PixelText(text, pixelSize: 3, color: DesignTokens.Accent.classicGreen)
+        MonoText(text, size: .caption, weight: .heavy,
+                 color: DesignTokens.Accent.classicGreen)
             .padding(.top, 8)
+            .padding(.leading, 2)
     }
 
     private func disabledRow(label: String) -> some View {
         HStack {
-            PixelText(label, pixelSize: 2, color: DesignTokens.Surface.dimText)
+            MonoText(label, size: .footnote, weight: .heavy, color: DesignTokens.Surface.dimText)
             Spacer()
         }
-        .padding(12)
+        .padding(10)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
     }
@@ -276,11 +283,11 @@ struct ToggleRow: View {
 
     var body: some View {
         HStack {
-            PixelText(label, pixelSize: 2, color: DesignTokens.Surface.mutedText)
+            MonoText.label(label)
             Spacer()
             PixelToggle(isOn: $isOn)
         }
-        .padding(12)
+        .padding(10)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
     }
@@ -295,16 +302,15 @@ struct StepperRow: View {
 
     var body: some View {
         HStack {
-            PixelText(label, pixelSize: 2, color: DesignTokens.Surface.mutedText)
+            MonoText.label(label)
             Spacer()
             Stepper(displayed, value: $value, in: range, step: step)
                 .labelsHidden()
-            Text(displayed)
-                .font(.system(.body, design: .monospaced).weight(.heavy))
-                .foregroundColor(DesignTokens.Accent.classicGreen)
+            MonoText(displayed, size: .body, weight: .heavy,
+                     color: DesignTokens.Accent.classicGreen)
                 .frame(width: 56, alignment: .trailing)
         }
-        .padding(12)
+        .padding(10)
         .background(DesignTokens.Surface.card)
         .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
     }
