@@ -33,6 +33,7 @@
 		7768E66E179B3BE8C6203A75 /* HabitRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E747DC1AAA9A4FBA666A5EB1 /* HabitRepositoryTests.swift */; };
 		7CB345DE49CB46018677CA6B /* PixelToggleSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C714E17DF87A531BC092CE1C /* PixelToggleSnapshotTests.swift */; };
 		80D4ADEFB494A6F957CC1805 /* AddHabitWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6924FF76EAC50878CA3AE67B /* AddHabitWizardView.swift */; };
+		8760DA7DB42A41F68559C30B /* NotificationCopyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8685CDF1D2F1A55A43E7886C /* NotificationCopyTests.swift */; };
 		87C1A68BFF0A9696445E4685 /* HabitDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90544161546A5C198B643DE5 /* HabitDetailView.swift */; };
 		949E003456E6050AB2E154FC /* InsightCardSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCA18B18028CE107F9D07F71 /* InsightCardSnapshotTests.swift */; };
 		98FF2CE8246EDFFC3AF2495D /* FABSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE5ABBCEAA2B6B3A25A1B2E /* FABSnapshotTests.swift */; };
@@ -114,6 +115,7 @@
 		7CCBE0C6D656FA4D1DC4322C /* HabitMap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HabitMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8215CC4A7FADBF823D95DBB8 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83929D2082830E8608F7059A /* HabitMapCoreTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HabitMapCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8685CDF1D2F1A55A43E7886C /* NotificationCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCopyTests.swift; sourceTree = "<group>"; };
 		8CF6BF4418977CBD4089DE0D /* YearGridSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearGridSnapshotTests.swift; sourceTree = "<group>"; };
 		8EC9C233F055E46B59F2A641 /* RiskExpandedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskExpandedView.swift; sourceTree = "<group>"; };
 		90544161546A5C198B643DE5 /* HabitDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailView.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 				527E2C9D60C3E96AE2E3B303 /* HealthSyncServiceTests.swift */,
 				DCA18B18028CE107F9D07F71 /* InsightCardSnapshotTests.swift */,
 				96E1E50A89015CA141529F75 /* InsightsEngineTests.swift */,
+				8685CDF1D2F1A55A43E7886C /* NotificationCopyTests.swift */,
 				02921A0BEC8F6BB0C4615565 /* PixelButtonSnapshotTests.swift */,
 				6ECD91A1958D5E9519131442 /* PixelFontSnapshotTests.swift */,
 				AD925560425AC09D9809C873 /* PixelIconSnapshotTests.swift */,
@@ -494,6 +497,7 @@
 				E0AF4B34560DAC32527C3E87 /* HealthSyncServiceTests.swift in Sources */,
 				949E003456E6050AB2E154FC /* InsightCardSnapshotTests.swift in Sources */,
 				E3C36D92821A7C62C3BA374B /* InsightsEngineTests.swift in Sources */,
+				8760DA7DB42A41F68559C30B /* NotificationCopyTests.swift in Sources */,
 				6FC75F9B2B284442AC704AC0 /* PixelButtonSnapshotTests.swift in Sources */,
 				52A713F8F246F34FAC6683A6 /* PixelFontSnapshotTests.swift in Sources */,
 				477E8365631C9C4FD4778572 /* PixelIconSnapshotTests.swift in Sources */,
