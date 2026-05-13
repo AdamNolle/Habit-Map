@@ -1,9 +1,14 @@
 import Foundation
 import SwiftData
 
+public enum HabitChange: Sendable {
+    case created, updated, archived, deleted
+}
+
 @MainActor
 public final class HabitRepository: ObservableObject {
     public let context: ModelContext
+    public var onHabitChanged: ((Habit, HabitChange) -> Void)?
 
     public init(context: ModelContext) {
         self.context = context
@@ -90,6 +95,7 @@ public final class HabitRepository: ObservableObject {
         habit.reminderTime = reminderTime
         context.insert(habit)
         try context.save()
+        onHabitChanged?(habit, .created)
         return habit
     }
 
@@ -111,20 +117,62 @@ public final class HabitRepository: ObservableObject {
         if let reminderTime { habit.reminderTime = reminderTime }
         if let page { habit.page = page }
         try context.save()
+        onHabitChanged?(habit, .updated)
     }
 
     public func archiveHabit(_ habit: Habit) throws {
         habit.isArchived = true
         try context.save()
+        onHabitChanged?(habit, .archived)
     }
 
     public func deleteHabit(_ habit: Habit) throws {
+        let cached = habit
         context.delete(habit)
         try context.save()
+        onHabitChanged?(cached, .deleted)
     }
 
     public func reorderHabits(_ ordered: [Habit]) throws {
         for (idx, habit) in ordered.enumerated() { habit.sortOrder = idx }
+        try context.save()
+    }
+
+    // MARK: - Settings
+
+    public func userSettings() throws -> UserSettings {
+        try UserSettings.fetchOrCreate(in: context)
+    }
+
+    // MARK: - Reset
+
+    public enum DeleteScope: Sendable {
+        case archivedOnly
+        case everything
+    }
+
+    public func deleteAll(scope: DeleteScope) throws {
+        switch scope {
+        case .archivedOnly:
+            for page in try fetchPages(includeArchived: true) where page.isArchived {
+                for habit in (page.habits ?? []) {
+                    context.delete(habit)
+                }
+                context.delete(page)
+            }
+        case .everything:
+            let pages = try fetchPages(includeArchived: true)
+            for page in pages {
+                for habit in (page.habits ?? []) {
+                    context.delete(habit)
+                }
+                context.delete(page)
+            }
+            let allCompletions = try context.fetch(FetchDescriptor<HabitCompletion>())
+            for c in allCompletions { context.delete(c) }
+            let allSettings = try context.fetch(FetchDescriptor<UserSettings>())
+            for s in allSettings { context.delete(s) }
+        }
         try context.save()
     }
 }
