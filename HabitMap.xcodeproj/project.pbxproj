@@ -12,6 +12,7 @@
 		11F65CC935430F763ABF32F0 /* RiskHeatmapSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68ABB512278142EF9E18A698 /* RiskHeatmapSnapshotTests.swift */; };
 		170A238B91EF5DF281F566E7 /* DayDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 081F6E0885CF4E9712BC2F1F /* DayDetailSheet.swift */; };
 		1F580AC2C4C83A7BECA2FE35 /* HabitModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6867EB4E03DE850E9B9B67A7 /* HabitModelTests.swift */; };
+		2DBF6871652F638D2603911E /* SettingsNavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60CA65369E46C5EF4A647AE /* SettingsNavigationUITests.swift */; };
 		357D4F8FDEFE767EE63E9452 /* AddHabitStep2View.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2E8578D54CAAF099033B10 /* AddHabitStep2View.swift */; };
 		35CEFC2C0F66B1CEB4D8EE48 /* EmojiPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF46C5C2A08D368DCAD9721C /* EmojiPickerTests.swift */; };
 		39450D2EEF7DE83C4F7C328D /* PageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05ADF44465ADB3148250823 /* PageContentView.swift */; };
@@ -140,6 +141,7 @@
 		B29B60C6BB57612F69E0C664 /* NotificationSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSchedulerTests.swift; sourceTree = "<group>"; };
 		BAB9F4F78A9F08546C68650B /* PlaceholderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceholderTests.swift; sourceTree = "<group>"; };
 		BF2E8578D54CAAF099033B10 /* AddHabitStep2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHabitStep2View.swift; sourceTree = "<group>"; };
+		C60CA65369E46C5EF4A647AE /* SettingsNavigationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsNavigationUITests.swift; sourceTree = "<group>"; };
 		C714E17DF87A531BC092CE1C /* PixelToggleSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelToggleSnapshotTests.swift; sourceTree = "<group>"; };
 		CA202B6F37F514E81B92D0A2 /* WeekdayPickerSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekdayPickerSnapshotTests.swift; sourceTree = "<group>"; };
 		CA38D53212FC1844B646528A /* HabitMapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitMapApp.swift; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				17D45A9D7CA1537DD9F8154A /* InsightsNavigationUITests.swift */,
 				6B1900B14C617C11A124A5D9 /* MapNavigationUITests.swift */,
 				D5F0755338E934F3AFEE78FF /* PageCRUDUITests.swift */,
+				C60CA65369E46C5EF4A647AE /* SettingsNavigationUITests.swift */,
 				528A8798A1DAFC93A73B57EF /* TodayFlowUITests.swift */,
 			);
 			path = HabitMapUITests;
@@ -579,6 +582,7 @@
 				C8E2AB72730942ABDD26ECBE /* InsightsNavigationUITests.swift in Sources */,
 				432EB18366068EA0938FB510 /* MapNavigationUITests.swift in Sources */,
 				FA8646926E5751D86396D1E3 /* PageCRUDUITests.swift in Sources */,
+				2DBF6871652F638D2603911E /* SettingsNavigationUITests.swift in Sources */,
 				9B272DE7317EEE170275993F /* TodayFlowUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
