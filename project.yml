@@ -26,6 +26,13 @@ targets:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
+    preBuildScripts:
+      - script: |
+          if command -v swiftlint &> /dev/null; then
+            swiftlint --config "${SRCROOT}/.swiftlint.yml"
+          fi
+        name: SwiftLint
+        shell: /bin/bash
     sources:
       - path: Apps/iOS/HabitMap
         excludes:

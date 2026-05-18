@@ -58,6 +58,6 @@ public enum NotificationTone: String, Codable, Sendable {
     case gentle, direct
 }
 
-public enum DisplayMode: String, Codable, Sendable {
+public enum DisplayMode: String, Codable, Sendable, CaseIterable {
     case dark, light, auto
 }

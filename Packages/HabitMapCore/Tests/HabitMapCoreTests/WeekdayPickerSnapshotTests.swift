@@ -3,22 +3,21 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
+@MainActor
 final class WeekdayPickerSnapshotTests: XCTestCase {
+    private func wrap(_ view: some View) -> some View {
+        view.environmentObject(Haptics()).padding(16).background(Color.black).fixedSize()
+    }
+
     func test_allOn() {
-        let view = WeekdayPicker(mask: .constant(0b01111111))
-            .padding(16).background(Color.black).fixedSize()
-        assertSnapshot(of: view, as: .image(precision: 0.99))
+        assertSnapshot(of: wrap(WeekdayPicker(mask: .constant(0b01111111))), as: .image(precision: 0.99))
     }
 
     func test_weekdaysOnly() {
-        let view = WeekdayPicker(mask: .constant(0b00011111))
-            .padding(16).background(Color.black).fixedSize()
-        assertSnapshot(of: view, as: .image(precision: 0.99))
+        assertSnapshot(of: wrap(WeekdayPicker(mask: .constant(0b00011111))), as: .image(precision: 0.99))
     }
 
     func test_noneSelected() {
-        let view = WeekdayPicker(mask: .constant(0))
-            .padding(16).background(Color.black).fixedSize()
-        assertSnapshot(of: view, as: .image(precision: 0.99))
+        assertSnapshot(of: wrap(WeekdayPicker(mask: .constant(0))), as: .image(precision: 0.99))
     }
 }

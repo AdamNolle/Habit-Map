@@ -54,7 +54,7 @@ struct MetricPickerView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     MonoText.label("DAILY GOAL")
                     HStack(spacing: DesignTokens.Spacing.md) {
-                        PixelButton("−", style: .secondary, accent: accent) {
+                        AppButton("−", style: .glass, accent: accent) {
                             goal = max(stepIncrement(for: opt), goal - stepIncrement(for: opt))
                         }.frame(width: 56)
                         VStack(spacing: 2) {
@@ -63,7 +63,7 @@ struct MetricPickerView: View {
                                      color: DesignTokens.Surface.mutedText)
                         }
                         .frame(maxWidth: .infinity)
-                        PixelButton("+", style: .secondary, accent: accent) {
+                        AppButton("+", style: .glass, accent: accent) {
                             goal += stepIncrement(for: opt)
                         }.frame(width: 56)
                     }

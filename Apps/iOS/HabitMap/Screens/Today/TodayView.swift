@@ -4,36 +4,30 @@ import HabitMapCore
 
 struct TodayView: View {
     @Query(sort: \HabitPage.sortOrder) private var pages: [HabitPage]
-    @Query private var allSettings: [UserSettings]
     @EnvironmentObject private var repo: HabitRepository
+    @EnvironmentObject private var haptics: Haptics
     @State private var selectedPageID: UUID?
     @State private var wizardPage: HabitPage?
+
+    private var activePages: [HabitPage] { pages.filter { !$0.isArchived } }
 
     var body: some View {
         ZStack(alignment: .bottom) {
             DesignTokens.Surface.bg.ignoresSafeArea()
 
-            if pages.filter({ !$0.isArchived }).isEmpty {
+            if activePages.isEmpty {
                 ProgressView()
                     .tint(DesignTokens.Surface.mutedText)
             } else {
                 TabView(selection: $selectedPageID) {
-                    ForEach(pages.filter { !$0.isArchived }) { page in
+                    ForEach(activePages) { page in
                         PageContentView(page: page)
                             .tag(page.id as UUID?)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .onAppear {
-                    if selectedPageID == nil {
-                        let active = pages.filter { !$0.isArchived }
-                        if let preferred = allSettings.first?.defaultPageId,
-                           active.contains(where: { $0.id == preferred }) {
-                            selectedPageID = preferred
-                        } else {
-                            selectedPageID = active.first?.id
-                        }
-                    }
+                    if selectedPageID == nil { selectedPageID = activePages.first?.id }
                 }
                 .onChange(of: pages) { _, newPages in
                     let active = newPages.filter { !$0.isArchived }
@@ -41,33 +35,37 @@ struct TodayView: View {
                         selectedPageID = active.first?.id
                     }
                 }
-            }
-
-            VStack(spacing: 8) {
-                let active = pages.filter { !$0.isArchived }
-                if !active.isEmpty {
-                    PageDots(count: active.count,
-                             activeIndex: active.firstIndex { $0.id == selectedPageID } ?? 0,
-                             activeColor: active.first { $0.id == selectedPageID }?.accentColor
-                                              ?? DesignTokens.Surface.mutedText)
-                        .padding(.bottom, 8)
+                .onChange(of: selectedPageID) { _, _ in
+                    haptics.pageSwipe()
                 }
             }
-            .allowsHitTesting(false)
+
+            // Page dots
+            if !activePages.isEmpty {
+                PageDots(
+                    count: activePages.count,
+                    activeIndex: activePages.firstIndex { $0.id == selectedPageID } ?? 0,
+                    activeColor: activePages.first { $0.id == selectedPageID }?.accentColor
+                        ?? DesignTokens.Surface.mutedText
+                )
+                .padding(.bottom, 8)
+                .allowsHitTesting(false)
+            }
         }
         .overlay(alignment: .bottomTrailing) {
             if let id = selectedPageID,
-               let page = pages.first(where: { $0.id == id }) {
+               let page = activePages.first(where: { $0.id == id }) {
                 FAB(accent: page.accentColor) { wizardPage = page }
-                    .padding(.trailing, DesignTokens.Spacing.lg)
+                    .padding(.trailing, DesignTokens.Spacing.xl)
                     .padding(.bottom, 16)
                     .accessibilityLabel("Add habit to \(page.name)")
             }
         }
         .sheet(item: $wizardPage) { page in
-            AddHabitWizardView(page: page).environmentObject(repo)
+            AddHabitWizardView(page: page)
+                .environmentObject(repo)
+                .environmentObject(haptics)
         }
-        .preferredColorScheme(.dark)
     }
 }
 

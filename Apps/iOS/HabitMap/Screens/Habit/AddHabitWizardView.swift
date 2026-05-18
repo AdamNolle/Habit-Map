@@ -18,6 +18,7 @@ struct WizardDraft {
 struct AddHabitWizardView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var repo: HabitRepository
+    @EnvironmentObject private var haptics: Haptics
     let page: HabitPage
 
     @State private var step: Int = 0
@@ -43,12 +44,15 @@ struct AddHabitWizardView: View {
 
                 HStack(spacing: DesignTokens.Spacing.md) {
                     if step > 0 {
-                        PixelButton("BACK", style: .secondary, accent: page.accentColor) { step -= 1 }
+                        AppButton("BACK", style: .glass, accent: page.accentColor) {
+                            haptics.wizardStep()
+                            step -= 1
+                        }
                     }
-                    PixelButton(step == 2 ? "CREATE" : "NEXT",
+                    AppButton(step == 2 ? "CREATE" : "NEXT",
                                 accent: page.accentColor,
                                 isEnabled: canAdvance) {
-                        if step < 2 { step += 1 } else { create() }
+                        if step < 2 { haptics.wizardStep(); step += 1 } else { create() }
                     }
                 }
                 .padding(DesignTokens.Spacing.lg)
@@ -62,7 +66,6 @@ struct AddHabitWizardView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 
     private var canAdvance: Bool {
@@ -97,6 +100,7 @@ struct AddHabitWizardView: View {
             habit.healthGoal = draft.healthGoal
             try? repo.context.save()
         }
+        haptics.success()
         dismiss()
     }
 }

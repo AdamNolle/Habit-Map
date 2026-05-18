@@ -64,17 +64,17 @@ struct HabitDetailView: View {
 
                     VStack(spacing: 10) {
                         if habit.isArchived {
-                            PixelButton("UNARCHIVE", style: .secondary, accent: habit.accentColor) {
+                            AppButton("UNARCHIVE", style: .glass, accent: habit.accentColor) {
                                 habit.isArchived = false
                                 try? repo.context.save()
                             }
                         } else {
-                            PixelButton("ARCHIVE", style: .secondary, accent: habit.accentColor) {
+                            AppButton("ARCHIVE", style: .glass, accent: habit.accentColor) {
                                 try? repo.archiveHabit(habit)
                                 dismiss()
                             }
                         }
-                        PixelButton("DELETE", style: .destructive) { showDeleteAlert = true }
+                        AppButton("DELETE", style: .destructive) { showDeleteAlert = true }
                     }
                 }
                 .padding(DesignTokens.Spacing.md)

@@ -1,0 +1,19 @@
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - type_body_length
+  - file_length
+  - function_body_length
+
+opt_in_rules:
+  - empty_count
+  - explicit_init
+  - closure_spacing
+  - first_where
+  - force_unwrapping
+
+excluded:
+  - Packages/HabitMapCore/.build
+  - Apps/iOS/HabitMapUITests
+  - .build
+  - DerivedData

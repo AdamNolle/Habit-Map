@@ -3,6 +3,7 @@ import SwiftUI
 public struct EmojiPicker: View {
     @Binding var selected: String
     let accent: Color
+    @EnvironmentObject private var haptics: Haptics
 
     public static let catalog: [String] = [
         // Health
@@ -30,7 +31,7 @@ public struct EmojiPicker: View {
     public var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 8), spacing: 4) {
             ForEach(Self.catalog, id: \.self) { emoji in
-                Button(action: { selected = emoji }) {
+                Button(action: { haptics.selection(); selected = emoji }) {
                     Text(emoji)
                         .font(.system(size: 22))
                         .frame(width: 36, height: 36)

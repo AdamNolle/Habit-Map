@@ -25,13 +25,13 @@ struct AddHabitStep2View: View {
                 VStack(alignment: .leading, spacing: 8) {
                     MonoText.label("TARGET REPS")
                     HStack(spacing: DesignTokens.Spacing.md) {
-                        PixelButton("−", style: .secondary, accent: Color(hex: draft.accentHex)) {
+                        AppButton("−", style: .glass, accent: Color(hex: draft.accentHex)) {
                             draft.targetReps = max(1, draft.targetReps - 1)
                         }.frame(width: 56)
                         MonoText("\(draft.targetReps)", size: .title, weight: .heavy,
                                  color: Color(hex: draft.accentHex))
                             .frame(maxWidth: .infinity)
-                        PixelButton("+", style: .secondary, accent: Color(hex: draft.accentHex)) {
+                        AppButton("+", style: .glass, accent: Color(hex: draft.accentHex)) {
                             draft.targetReps = min(20, draft.targetReps + 1)
                         }.frame(width: 56)
                     }

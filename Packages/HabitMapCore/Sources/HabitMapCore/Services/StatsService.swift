@@ -59,6 +59,19 @@ public final class StatsService {
         return best
     }
 
+    /// Per-day binary completion values (1.0 = complete, 0.0 = incomplete/no data) for the last
+    /// `window` days. Useful for driving sparklines and pulse charts.
+    public func consistencySeries(habits: [Habit], window: Int = 30, asOf: Date = Date()) -> [Double] {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: asOf)
+        return (0..<window).reversed().map { offset -> Double in
+            guard let day = cal.date(byAdding: .day, value: -offset, to: today) else { return 0 }
+            let scheduled = habits.filter { $0.isScheduled(day) }
+            guard !scheduled.isEmpty else { return 0 }
+            return isComplete(on: day, habits: habits) ? 1.0 : 0.0
+        }
+    }
+
     /// 30-day consistency: complete days / scheduled days in the window.
     public func consistency(habits: [Habit], window: Int = 30, asOf: Date = Date()) -> Double {
         let cal = Calendar.current

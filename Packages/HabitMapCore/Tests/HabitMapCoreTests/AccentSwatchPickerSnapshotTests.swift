@@ -3,9 +3,11 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
+@MainActor
 final class AccentSwatchPickerSnapshotTests: XCTestCase {
     func test_picker_default() {
         let view = AccentSwatchPicker(selectedHex: .constant("#2BFF5F"))
+            .environmentObject(Haptics())
             .frame(width: 240)
             .padding(16)
             .background(Color.black)

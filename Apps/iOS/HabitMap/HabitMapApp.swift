@@ -150,6 +150,7 @@ struct HabitMapApp: App {
     @StateObject private var repo: HabitRepository
     @StateObject private var sync: HealthSyncService
     @StateObject private var notifications: NotificationCoordinator
+    @StateObject private var haptics: Haptics
 
     private let healthRefreshIdentifier = "com.adam.habitmap.health-refresh"
 
@@ -160,10 +161,12 @@ struct HabitMapApp: App {
             let repo = HabitRepository(context: container.mainContext)
             let provider: HealthKitProviding = HealthKitService()
             let notifScheduler: NotificationScheduling = NotificationScheduler()
+            let hapticsEnabled = (try? repo.userSettings())?.hapticsEnabled ?? true
             _repo = StateObject(wrappedValue: repo)
             _sync = StateObject(wrappedValue: HealthSyncService(provider: provider, repository: repo))
             _notifications = StateObject(wrappedValue:
                 NotificationCoordinator(scheduler: notifScheduler, repository: repo))
+            _haptics = StateObject(wrappedValue: Haptics(isEnabled: hapticsEnabled))
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -175,6 +178,7 @@ struct HabitMapApp: App {
                 .environmentObject(repo)
                 .environmentObject(sync)
                 .environmentObject(notifications)
+                .environmentObject(haptics)
                 .task {
                     do {
                         try await MainActor.run {
@@ -203,7 +207,17 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var sync: HealthSyncService
     @EnvironmentObject private var notifications: NotificationCoordinator
+    @EnvironmentObject private var haptics: Haptics
+    @Query private var settingsArray: [UserSettings]
     @State private var activeTab: HabitMapTab = .today
+
+    private var preferredScheme: ColorScheme? {
+        switch settingsArray.first?.displayMode {
+        case .dark: return .dark
+        case .light: return .light
+        default: return nil
+        }
+    }
 
     var body: some View {
         TabView(selection: $activeTab) {
@@ -232,12 +246,14 @@ struct RootView: View {
                 }
         }
         .tint(DesignTokens.Accent.classicGreen)
+        .preferredColorScheme(preferredScheme)
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 Task { await sync.syncToday() }
             }
         }
         .onChange(of: activeTab) { _, new in
+            haptics.tabChange()
             if new == .setup {
                 Task { await notifications.requestPermissionIfNeeded() }
             }
@@ -245,6 +261,5 @@ struct RootView: View {
         .onReceive(NotificationCenter.default.publisher(for: .habitMapNotificationTapped)) { _ in
             activeTab = .today
         }
-        .preferredColorScheme(.dark)
     }
 }

@@ -4,6 +4,7 @@ import HabitMapCore
 struct AddPageSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var repo: HabitRepository
+    @EnvironmentObject private var haptics: Haptics
 
     @State private var name: String = ""
     @State private var emoji: String = "🩺"
@@ -27,12 +28,13 @@ struct AddPageSheet: View {
                     section(title: "ACCENT") {
                         AccentSwatchPicker(selectedHex: $accentHex)
                     }
-                    PixelButton("CREATE PAGE",
-                                style: .primary,
+                    AppButton("CREATE PAGE",
+                                style: .filled,
                                 accent: Color(hex: accentHex),
                                 isEnabled: !name.trimmingCharacters(in: .whitespaces).isEmpty) {
                         do {
                             try repo.createPage(name: name, emoji: emoji, accentHex: accentHex)
+                            haptics.success()
                             dismiss()
                         } catch { print("Create page failed: \(error)") }
                     }
@@ -48,7 +50,6 @@ struct AddPageSheet: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 
     @ViewBuilder
