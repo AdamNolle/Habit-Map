@@ -14,22 +14,23 @@ struct DayDetailSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                     PixelText(headerDate, pixelSize: 3, color: accent)
 
-                    VStack(spacing: 8) {
+                    VStack(spacing: 6) {
                         ForEach(scheduled) { habit in
                             habitRow(habit)
                         }
                         if scheduled.isEmpty {
-                            PixelText("REST DAY", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                            MonoText("REST DAY", size: .footnote, weight: .heavy,
+                                     color: DesignTokens.Surface.mutedText)
                                 .padding(.vertical, 24)
                                 .frame(maxWidth: .infinity)
                         }
                     }
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        PixelText("NOTE", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    VStack(alignment: .leading, spacing: 8) {
+                        MonoText.label("NOTE")
                         TextEditor(text: $note)
                             .scrollContentBackground(.hidden)
                             .background(DesignTokens.Surface.tile)
@@ -38,7 +39,7 @@ struct DayDetailSheet: View {
                             .font(.system(.body, design: .monospaced))
                     }
                 }
-                .padding(DesignTokens.Spacing.lg)
+                .padding(DesignTokens.Spacing.md)
             }
             .background(DesignTokens.Surface.bg)
             .navigationTitle("DAY")
@@ -68,16 +69,15 @@ struct DayDetailSheet: View {
 
     @ViewBuilder
     private func habitRow(_ habit: Habit) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             HabitCell(level: habit.cellLevel(on: date),
                       accent: habit.accentColor,
                       isToday: Calendar.current.isDateInToday(date),
-                      size: 32)
+                      size: 28)
             VStack(alignment: .leading, spacing: 2) {
-                PixelText(habit.name, pixelSize: 2, color: habit.accentColor)
-                Text(progressLabel(habit))
-                    .font(.system(.caption2, design: .monospaced).weight(.heavy))
-                    .foregroundColor(DesignTokens.Surface.mutedText)
+                MonoText(habit.name, size: .footnote, weight: .heavy, color: habit.accentColor)
+                MonoText(progressLabel(habit), size: .caption, weight: .heavy,
+                         color: DesignTokens.Surface.mutedText)
             }
             Spacer()
         }

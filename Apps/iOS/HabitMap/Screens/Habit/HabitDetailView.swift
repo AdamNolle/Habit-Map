@@ -12,51 +12,57 @@ struct HabitDetailView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                     HStack {
                         Spacer()
                         PixelRing(filledSegments: PixelRing.segments(for: habit.progressFraction(on: Date())),
                                   accent: habit.accentColor)
-                            .frame(width: 200, height: 200)
+                            .frame(width: 180, height: 180)
                         Spacer()
                     }
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        PixelText("NAME", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    VStack(alignment: .leading, spacing: 8) {
+                        MonoText.label("NAME")
                         TextField("name", text: $habit.name)
                             .textInputAutocapitalization(.characters)
                             .font(.system(.body, design: .monospaced).weight(.heavy))
-                            .padding(12)
+                            .padding(10)
                             .background(DesignTokens.Surface.tile)
                             .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
                     }
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        PixelText("EMOJI", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    VStack(alignment: .leading, spacing: 8) {
+                        MonoText.label("EMOJI")
                         EmojiPicker(selected: $habit.emoji, accent: habit.accentColor)
                     }
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        PixelText("ACCENT", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    VStack(alignment: .leading, spacing: 8) {
+                        MonoText.label("ACCENT")
                         AccentSwatchPicker(selectedHex: $habit.accentHex)
                     }
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        PixelText("DAYS", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    VStack(alignment: .leading, spacing: 8) {
+                        MonoText.label("DAYS")
                         WeekdayPicker(mask: $habit.weekdayMask, accent: habit.accentColor)
                     }
 
                     if habit.type == .manualMultiple {
-                        VStack(alignment: .leading, spacing: 10) {
-                            PixelText("TARGET REPS", pixelSize: 2, color: DesignTokens.Surface.mutedText)
-                            Stepper("\(habit.targetReps)", value: $habit.targetReps, in: 1...20)
-                                .padding(12)
-                                .background(DesignTokens.Surface.tile)
-                                .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
+                        VStack(alignment: .leading, spacing: 8) {
+                            MonoText.label("TARGET REPS")
+                            HStack {
+                                Stepper("\(habit.targetReps)", value: $habit.targetReps, in: 1...20)
+                                    .labelsHidden()
+                                Spacer()
+                                MonoText("\(habit.targetReps)", size: .body, weight: .heavy,
+                                         color: habit.accentColor)
+                            }
+                            .padding(10)
+                            .background(DesignTokens.Surface.tile)
+                            .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
                         }
                     }
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: 10) {
                         if habit.isArchived {
                             PixelButton("UNARCHIVE", style: .secondary, accent: habit.accentColor) {
                                 habit.isArchived = false
@@ -71,7 +77,7 @@ struct HabitDetailView: View {
                         PixelButton("DELETE", style: .destructive) { showDeleteAlert = true }
                     }
                 }
-                .padding(DesignTokens.Spacing.lg)
+                .padding(DesignTokens.Spacing.md)
             }
             .background(DesignTokens.Surface.bg)
             .navigationTitle("HABIT")

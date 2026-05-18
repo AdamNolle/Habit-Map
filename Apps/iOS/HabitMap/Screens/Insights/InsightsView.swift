@@ -16,51 +16,52 @@ struct InsightsView: View {
         let accent = DesignTokens.Accent.classicGreen
 
         ScrollView {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-                PixelText("INSIGHTS", pixelSize: 4, color: accent)
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+                PixelText("INSIGHTS", pixelSize: 3, color: accent)
                     .accessibilityLabel("INSIGHTS")
                     .accessibilityAddTraits(.isHeader)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.top, DesignTokens.Spacing.lg)
+                    .padding(.horizontal, DesignTokens.Spacing.md)
+                    .padding(.top, DesignTokens.Spacing.md)
 
                 if insights.isEmpty {
-                    Text("Not enough data yet — keep logging and we'll surface patterns here.")
-                        .font(.system(.callout, design: .monospaced))
-                        .foregroundColor(DesignTokens.Surface.mutedText)
-                        .multilineTextAlignment(.leading)
+                    MonoText("Not enough data yet — keep logging and we'll surface patterns here.",
+                             size: .body, weight: .regular,
+                             color: DesignTokens.Surface.mutedText)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.horizontal, DesignTokens.Spacing.md)
                 } else {
-                    LazyVStack(spacing: DesignTokens.Spacing.md) {
+                    LazyVStack(spacing: DesignTokens.Spacing.sm) {
                         ForEach(insights) { insight in
                             InsightCard(insight: insight)
                         }
                     }
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
+                    .padding(.horizontal, DesignTokens.Spacing.md)
                 }
 
                 Button {
                     showRiskExpanded = true
                 } label: {
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            PixelText("RISK WINDOWS", pixelSize: 3, color: accent)
+                            MonoText("RISK WINDOWS", size: .footnote, weight: .heavy, color: accent)
                             Spacer()
-                            PixelText(">", pixelSize: 2, color: accent)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(accent)
                         }
-                        RiskHeatmap(forecast: forecast, accent: accent, cellSize: 28, showLabels: true)
+                        RiskHeatmap(forecast: forecast, accent: accent, cellSize: 26, showLabels: true)
                     }
-                    .padding(12)
+                    .padding(10)
                     .background(DesignTokens.Surface.card)
                     .overlay(Rectangle().stroke(accent, lineWidth: 2))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("RISK WINDOWS, tap to expand")
-                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.horizontal, DesignTokens.Spacing.md)
 
                 Spacer(minLength: 24)
             }
-            .padding(.bottom, DesignTokens.Spacing.xl)
+            .padding(.bottom, DesignTokens.Spacing.lg)
         }
         .background(DesignTokens.Surface.bg)
         .sheet(isPresented: $showRiskExpanded) {

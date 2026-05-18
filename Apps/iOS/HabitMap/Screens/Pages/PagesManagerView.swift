@@ -26,9 +26,12 @@ struct PagesManagerView: View {
                     Button {
                         showAddSheet = true
                     } label: {
-                        HStack {
-                            PixelIcon(.plus, color: DesignTokens.Accent.classicGreen, size: 18)
-                            PixelText("NEW PAGE", pixelSize: 2, color: DesignTokens.Accent.classicGreen)
+                        HStack(spacing: 8) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(DesignTokens.Accent.classicGreen)
+                            MonoText("NEW PAGE", size: .footnote, weight: .heavy,
+                                     color: DesignTokens.Accent.classicGreen)
                         }
                     }
                     .accessibilityLabel("Add page")
@@ -96,18 +99,18 @@ struct PagesManagerView: View {
 
     private func pageRow(_ page: HabitPage) -> some View {
         HStack {
-            Text(page.emoji).font(.system(size: 22))
+            Text(page.emoji).font(.system(size: 20))
             VStack(alignment: .leading, spacing: 2) {
-                PixelText(page.name, pixelSize: 2, color: page.accentColor)
+                MonoText(page.name, size: .footnote, weight: .heavy, color: page.accentColor)
                     .accessibilityLabel(page.name)
-                Text("\((page.habits ?? []).count) HABITS")
-                    .font(.system(.caption2, design: .monospaced).weight(.heavy))
-                    .foregroundColor(DesignTokens.Surface.mutedText)
+                MonoText("\((page.habits ?? []).count) HABITS",
+                         size: .caption, weight: .heavy,
+                         color: DesignTokens.Surface.mutedText)
             }
             Spacer()
             Rectangle()
                 .fill(page.accentColor)
-                .frame(width: 12, height: 12)
+                .frame(width: 10, height: 10)
                 .overlay(Rectangle().stroke(.black, lineWidth: 1))
         }
         .padding(.vertical, 4)

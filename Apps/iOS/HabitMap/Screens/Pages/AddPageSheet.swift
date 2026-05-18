@@ -12,12 +12,12 @@ struct AddPageSheet: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                     section(title: "NAME") {
                         TextField("e.g. HEALTH", text: $name)
                             .textInputAutocapitalization(.characters)
                             .font(.system(.body, design: .monospaced).weight(.heavy))
-                            .padding(12)
+                            .padding(10)
                             .background(DesignTokens.Surface.tile)
                             .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
                     }
@@ -37,7 +37,7 @@ struct AddPageSheet: View {
                         } catch { print("Create page failed: \(error)") }
                     }
                 }
-                .padding(DesignTokens.Spacing.lg)
+                .padding(DesignTokens.Spacing.md)
             }
             .background(DesignTokens.Surface.bg)
             .navigationTitle("NEW PAGE")
@@ -53,8 +53,8 @@ struct AddPageSheet: View {
 
     @ViewBuilder
     private func section<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            PixelText(title, pixelSize: 2, color: DesignTokens.Surface.mutedText)
+        VStack(alignment: .leading, spacing: 8) {
+            MonoText.label(title)
             content()
         }
     }

@@ -14,9 +14,9 @@ struct MapView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-                PixelText("HEAT MAP", pixelSize: 4, color: accent)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.top, DesignTokens.Spacing.lg)
+                PixelText("HEAT MAP", pixelSize: 3, color: accent)
+                    .padding(.horizontal, DesignTokens.Spacing.md)
+                    .padding(.top, DesignTokens.Spacing.md)
                     .accessibilityLabel("HEAT MAP")
                     .accessibilityAddTraits(.isHeader)
 
@@ -68,19 +68,13 @@ struct MapView: View {
 
     private var legend: some View {
         HStack(spacing: 6) {
-            Text("LESS")
-                .font(.system(.caption2, design: .monospaced).weight(.heavy))
-                .tracking(1.0)
-                .foregroundColor(DesignTokens.Surface.mutedText)
-            HabitCell(level: .empty, accent: accent, isToday: false, size: 10)
-            HabitCell(level: .p25, accent: accent, isToday: false, size: 10)
-            HabitCell(level: .p50, accent: accent, isToday: false, size: 10)
-            HabitCell(level: .p75, accent: accent, isToday: false, size: 10)
-            HabitCell(level: .p100, accent: accent, isToday: false, size: 10)
-            Text("MORE")
-                .font(.system(.caption2, design: .monospaced).weight(.heavy))
-                .tracking(1.0)
-                .foregroundColor(DesignTokens.Surface.mutedText)
+            MonoText.label("LESS")
+            HabitCell(level: .empty, accent: accent, isToday: false, size: 12)
+            HabitCell(level: .p25, accent: accent, isToday: false, size: 12)
+            HabitCell(level: .p50, accent: accent, isToday: false, size: 12)
+            HabitCell(level: .p75, accent: accent, isToday: false, size: 12)
+            HabitCell(level: .p100, accent: accent, isToday: false, size: 12)
+            MonoText.label("MORE")
         }
     }
 

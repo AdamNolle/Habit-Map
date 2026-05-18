@@ -6,17 +6,18 @@ struct AddHabitStep3View: View {
     let pageAccent: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
-            PixelText("STEP 3 - WHEN", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
+            MonoText("STEP 3 — WHEN", size: .caption, weight: .heavy,
+                     color: DesignTokens.Surface.mutedText)
 
-            VStack(alignment: .leading, spacing: 10) {
-                PixelText("DAYS", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+            VStack(alignment: .leading, spacing: 8) {
+                MonoText.label("DAYS")
                 WeekdayPicker(mask: $draft.weekdayMask, accent: Color(hex: draft.accentHex))
             }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    PixelText("REMINDER", pixelSize: 2, color: DesignTokens.Surface.mutedText)
+                    MonoText.label("REMINDER")
                     Spacer()
                     PixelToggle(isOn: $draft.reminderEnabled, accent: Color(hex: draft.accentHex))
                 }
