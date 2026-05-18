@@ -26,3 +26,10 @@ Packages/*/.swiftpm/
 
 # Misc
 *.log
+
+# Local reference artifacts
+Habit Map.zip
+habit-map-prototype.pdf
+
+# Claude Code internal files
+.claude/
