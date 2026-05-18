@@ -5,14 +5,17 @@ import HabitMapCore
 struct InsightsView: View {
     @Query(filter: #Predicate<HabitPage> { !$0.isArchived }) private var pages: [HabitPage]
     @State private var showRiskExpanded = false
+    @State private var showCoachChat = false
 
     private let insightsEngine = InsightsEngine()
     private let riskEngine = RiskForecastEngine()
+    private let extractor = SlipFeatureExtractor()
 
     var body: some View {
         let habits = pages.flatMap { ($0.habits ?? []).filter { !$0.isArchived && !$0.isPaused } }
         let insights = insightsEngine.generate(habits: habits)
         let forecast = riskEngine.forecast(habits: habits)
+        let features = extractor.extract(habits: habits)
         let accent = DesignTokens.Accent.classicGreen
 
         ScrollView {
@@ -22,6 +25,11 @@ struct InsightsView: View {
                     .accessibilityAddTraits(.isHeader)
                     .padding(.horizontal, DesignTokens.Spacing.md)
                     .padding(.top, DesignTokens.Spacing.md)
+
+                CoachSection(features: features) {
+                    showCoachChat = true
+                }
+                .padding(.horizontal, DesignTokens.Spacing.md)
 
                 if insights.isEmpty {
                     MonoText("Not enough data yet — keep logging and we'll surface patterns here.",
@@ -66,6 +74,9 @@ struct InsightsView: View {
         .background(DesignTokens.Surface.bg)
         .sheet(isPresented: $showRiskExpanded) {
             RiskExpandedView(forecast: forecast, accent: accent)
+        }
+        .sheet(isPresented: $showCoachChat) {
+            CoachChatView(features: features)
         }
         .preferredColorScheme(.dark)
     }
