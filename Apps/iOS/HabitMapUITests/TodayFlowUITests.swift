@@ -5,12 +5,10 @@ final class TodayFlowUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Habit name accessibility label is set on the PixelText inside HabitRow.
-        let exists = app.descendants(matching: .any)
-            .matching(identifier: "DRINK WATER")
-            .firstMatch
-            .waitForExistence(timeout: 10)
-            || app.staticTexts["DRINK WATER"].waitForExistence(timeout: 2)
-        XCTAssertTrue(exists, "Expected DRINK WATER habit row to appear on Today screen")
+        // Habits are displayed title-cased in HabitRow (e.g. "Drink Water").
+        let exists = app.staticTexts["Drink Water"].waitForExistence(timeout: 10)
+            || app.descendants(matching: .any).matching(identifier: "Drink Water").firstMatch
+                .waitForExistence(timeout: 2)
+        XCTAssertTrue(exists, "Expected Drink Water habit row to appear on Today screen")
     }
 }

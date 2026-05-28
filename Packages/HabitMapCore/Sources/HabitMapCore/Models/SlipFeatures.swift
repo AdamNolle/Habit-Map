@@ -47,8 +47,8 @@ public struct SlipFeatures: Sendable, Equatable, Codable {
     )
 
     public var isLearning: Bool {
-        // Fewer than 7 days of any data — coach should soft-pedal.
-        totalCompleted < 3 && totalScheduled < 7
+        // Fewer than 3 completions in the window — too little signal for the coach to land hard takes.
+        totalCompleted < 3
     }
 }
 

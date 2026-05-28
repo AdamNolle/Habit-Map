@@ -5,13 +5,15 @@ final class InsightsNavigationUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        let statsTab = app.buttons["STATS tab"].firstMatch
-        XCTAssertTrue(statsTab.waitForExistence(timeout: 10))
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 10))
+        let statsTab = tabBar.buttons.matching(NSPredicate(format: "label CONTAINS 'Stats'")).firstMatch
+        XCTAssertTrue(statsTab.waitForExistence(timeout: 5))
         statsTab.tap()
 
-        let insightsHeader = app.descendants(matching: .any).matching(identifier: "INSIGHTS").firstMatch
-        XCTAssertTrue(insightsHeader.waitForExistence(timeout: 5)
-                      || app.staticTexts["INSIGHTS"].waitForExistence(timeout: 5),
-                      "Expected INSIGHTS header after tapping STATS tab")
+        // v7 InsightsView hero text is "The pulse"
+        let header = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'pulse'")).firstMatch
+        XCTAssertTrue(header.waitForExistence(timeout: 5),
+                      "Expected 'The pulse' hero text after tapping Stats tab")
     }
 }

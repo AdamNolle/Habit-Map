@@ -22,7 +22,7 @@ final class HabitWizardUITests: XCTestCase {
         next.tap()
 
         // Step 2: pick MANUAL ONCE
-        let onceRow = app.buttons["ONCE A DAY"].firstMatch
+        let onceRow = app.buttons["Once a day"].firstMatch
         if onceRow.waitForExistence(timeout: 3) { onceRow.tap() }
 
         app.buttons["NEXT"].firstMatch.tap()
@@ -32,10 +32,10 @@ final class HabitWizardUITests: XCTestCase {
         XCTAssertTrue(create.waitForExistence(timeout: 5))
         create.tap()
 
-        // Back on Today, STRETCH habit appears.
-        let stretchLabel = app.descendants(matching: .any).matching(identifier: "STRETCH").firstMatch
-        XCTAssertTrue(stretchLabel.waitForExistence(timeout: 5)
-                      || app.staticTexts["STRETCH"].waitForExistence(timeout: 5),
-                      "Expected STRETCH habit row to appear after wizard")
+        // Back on Today — habit is stored as typed but displayed title-cased ("Stretch").
+        let stretchLabel = app.staticTexts["Stretch"].waitForExistence(timeout: 5)
+            || app.descendants(matching: .any).matching(identifier: "STRETCH").firstMatch
+                .waitForExistence(timeout: 2)
+        XCTAssertTrue(stretchLabel, "Expected Stretch habit row to appear after wizard")
     }
 }

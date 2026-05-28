@@ -126,6 +126,7 @@ struct MapView: View {
         )) { ref in
             DayDetailSheet(date: ref.date, habits: filteredHabits, accent: accent)
                 .environmentObject(repo)
+                .environmentObject(haptics)
         }
     }
 

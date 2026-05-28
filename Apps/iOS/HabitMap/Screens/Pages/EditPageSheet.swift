@@ -23,12 +23,17 @@ struct EditPageSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                     section(title: "NAME") {
-                        TextField("name", text: $name)
-                            .textInputAutocapitalization(.characters)
-                            .font(.system(.body, design: .monospaced).weight(.heavy))
-                            .padding(10)
-                            .background(DesignTokens.Surface.tile)
-                            .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
+                        TextField("Page name", text: $name)
+                            .textInputAutocapitalization(.words)
+                            .font(.custom(FontFamily.sans, size: 16))
+                            .fontWeight(.medium)
+                            .padding(12)
+                            .background(DesignTokens.Surface.card)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     }
                     section(title: "EMOJI") {
                         EmojiPicker(selected: $emoji, accent: Color(hex: accentHex))
@@ -43,7 +48,7 @@ struct EditPageSheet: View {
                             try repo.updatePage(page, name: name, emoji: emoji, accentHex: accentHex)
                             haptics.success()
                             dismiss()
-                        } catch { print("Update page failed: \(error)") }
+                        } catch { }
                     }
                 }
                 .padding(DesignTokens.Spacing.md)
@@ -62,7 +67,12 @@ struct EditPageSheet: View {
     @ViewBuilder
     private func section<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            MonoText.label(title)
+            Text(title.titleCased)
+                .font(.custom(FontFamily.sans, size: 11))
+                .fontWeight(.semibold)
+                .kerning(0.5)
+                .textCase(.uppercase)
+                .foregroundColor(DesignTokens.Surface.mutedText)
             content()
         }
     }

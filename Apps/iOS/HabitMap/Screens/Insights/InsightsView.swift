@@ -176,9 +176,11 @@ struct InsightsView: View {
         .background(DesignTokens.Surface.bg)
         .sheet(isPresented: $showRiskExpanded) {
             RiskExpandedView(forecast: forecast, accent: accent)
+                .environmentObject(haptics)
         }
         .sheet(isPresented: $showCoachChat) {
             CoachChatView(features: features)
+                .environmentObject(haptics)
         }
     }
 

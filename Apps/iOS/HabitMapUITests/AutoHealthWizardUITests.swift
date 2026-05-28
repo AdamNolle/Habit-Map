@@ -1,7 +1,7 @@
 import XCTest
 
 final class AutoHealthWizardUITests: XCTestCase {
-    /// Verifies the wizard reaches Step 2's AUTO-FILL FROM HEALTH option
+    /// Verifies the wizard reaches Step 2's Auto-fill from Health option
     /// and picks a metric. Doesn't tap CREATE because that triggers the
     /// HealthKit permission sheet which is system-modal and brittle in CI.
     func test_wizard_reachesAutoHealthOptionAndPicksSteps() throws {
@@ -21,14 +21,16 @@ final class AutoHealthWizardUITests: XCTestCase {
 
         app.buttons["NEXT"].firstMatch.tap()
 
-        let autoRow = app.buttons["AUTO-FILL FROM HEALTH"].firstMatch
+        // v7 label is sentence-cased
+        let autoRow = app.buttons["Auto-fill from Health"].firstMatch
         XCTAssertTrue(autoRow.waitForExistence(timeout: 5),
-                      "Expected AUTO-FILL FROM HEALTH option in Step 2")
+                      "Expected Auto-fill from Health option in Step 2")
         autoRow.tap()
 
-        let stepsMetric = app.buttons["STEPS"].firstMatch
+        // v7 metric label is sentence-cased
+        let stepsMetric = app.buttons["Steps"].firstMatch
         XCTAssertTrue(stepsMetric.waitForExistence(timeout: 5),
-                      "Expected STEPS metric in MetricPickerView")
+                      "Expected Steps metric in MetricPickerView")
         stepsMetric.tap()
     }
 }

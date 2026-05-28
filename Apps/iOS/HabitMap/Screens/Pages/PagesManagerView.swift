@@ -5,6 +5,7 @@ import HabitMapCore
 struct PagesManagerView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var repo: HabitRepository
+    @EnvironmentObject private var haptics: Haptics
     @Query(filter: #Predicate<HabitPage> { !$0.isArchived },
            sort: \HabitPage.sortOrder) private var activePages: [HabitPage]
     @Query(filter: #Predicate<HabitPage> { $0.isArchived },
@@ -17,7 +18,7 @@ struct PagesManagerView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("ACTIVE") {
+                Section("Active") {
                     ForEach(activePages) { page in
                         pageRow(page)
                     }
@@ -30,14 +31,16 @@ struct PagesManagerView: View {
                             Image(systemName: "plus")
                                 .font(.system(size: 14, weight: .bold))
                                 .foregroundColor(DesignTokens.Accent.classicGreen)
-                            MonoText("NEW PAGE", size: .footnote, weight: .heavy,
-                                     color: DesignTokens.Accent.classicGreen)
+                            Text("New page")
+                                .font(.custom(FontFamily.sans, size: 15))
+                                .fontWeight(.medium)
+                                .foregroundColor(DesignTokens.Accent.classicGreen)
                         }
                     }
                     .accessibilityLabel("Add page")
                 }
                 if !archivedPages.isEmpty {
-                    Section("ARCHIVED") {
+                    Section("Archived") {
                         ForEach(archivedPages) { page in
                             pageRow(page).foregroundColor(.secondary)
                         }
@@ -47,7 +50,7 @@ struct PagesManagerView: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
             .background(DesignTokens.Surface.bg)
-            .navigationTitle("PAGES")
+            .navigationTitle("Pages")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Done") { dismiss() }
@@ -55,10 +58,14 @@ struct PagesManagerView: View {
                 ToolbarItem(placement: .topBarTrailing) { EditButton() }
             }
             .sheet(isPresented: $showAddSheet) {
-                AddPageSheet().environmentObject(repo)
+                AddPageSheet()
+                    .environmentObject(repo)
+                    .environmentObject(haptics)
             }
             .sheet(item: $editingPage) { page in
-                EditPageSheet(page: page).environmentObject(repo)
+                EditPageSheet(page: page)
+                    .environmentObject(repo)
+                    .environmentObject(haptics)
             }
             .alert("Delete page?",
                    isPresented: Binding(get: { deletingPage != nil },
@@ -94,24 +101,26 @@ struct PagesManagerView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 
     private func pageRow(_ page: HabitPage) -> some View {
         HStack {
             Text(page.emoji).font(.system(size: 20))
             VStack(alignment: .leading, spacing: 2) {
-                MonoText(page.name, size: .footnote, weight: .heavy, color: page.accentColor)
+                Text(page.name.titleCased)
+                    .font(.custom(FontFamily.sans, size: 15))
+                    .fontWeight(.semibold)
+                    .foregroundColor(page.accentColor)
                     .accessibilityLabel(page.name)
-                MonoText("\((page.habits ?? []).count) HABITS",
-                         size: .caption, weight: .heavy,
-                         color: DesignTokens.Surface.mutedText)
+                let habitCount = (page.habits ?? []).count
+                Text("\(habitCount) habit\(habitCount == 1 ? "" : "s")")
+                    .font(.custom(FontFamily.sans, size: 12))
+                    .foregroundColor(DesignTokens.Surface.mutedText)
             }
             Spacer()
-            Rectangle()
+            Circle()
                 .fill(page.accentColor)
                 .frame(width: 10, height: 10)
-                .overlay(Rectangle().stroke(.black, lineWidth: 1))
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())

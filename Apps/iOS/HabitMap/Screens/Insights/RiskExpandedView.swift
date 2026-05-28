@@ -10,43 +10,58 @@ struct RiskExpandedView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-                    PixelText("RISK FORECAST", pixelSize: 3, color: accent)
-                        .accessibilityLabel("RISK FORECAST")
-                        .accessibilityAddTraits(.isHeader)
-                    MonoText("Where your habits tend to slip, by weekday and time of day. Darker = higher chance of missing.",
-                             size: .body, weight: .regular,
-                             color: DesignTokens.Surface.mutedText)
+                    Text("Risk forecast")
+                        .font(.custom(FontFamily.serif, size: 22))
+                        .italic()
+                        .foregroundColor(DesignTokens.Surface.fg())
+
+                    Text("Where your habits tend to slip, by weekday and time of day. Darker = higher chance of missing.")
+                        .font(.custom(FontFamily.sans, size: 14))
+                        .foregroundColor(DesignTokens.Surface.mutedText)
                         .fixedSize(horizontal: false, vertical: true)
 
                     RiskHeatmap(forecast: forecast, accent: accent, cellSize: 32)
 
                     if !forecast.topRisks.isEmpty {
-                        MonoText.label("TOP WINDOWS")
+                        Text("Top windows")
+                            .font(.custom(FontFamily.sans, size: 11))
+                            .fontWeight(.semibold)
+                            .kerning(0.5)
+                            .textCase(.uppercase)
+                            .foregroundColor(DesignTokens.Surface.mutedText)
+                            .padding(.top, 4)
+
                         ForEach(forecast.topRisks.indices, id: \.self) { idx in
                             let window = forecast.topRisks[idx]
                             HStack(spacing: 10) {
-                                Rectangle()
+                                Circle()
                                     .fill(windowColor(window.level))
-                                    .frame(width: 24, height: 24)
-                                    .overlay(Rectangle().stroke(.black, lineWidth: 1))
+                                    .frame(width: 10, height: 10)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    MonoText("\(InsightsEngine.weekdayName(window.weekday).uppercased()) \(InsightsEngine.bucketLabel(window.bucket).uppercased())",
-                                             size: .footnote, weight: .heavy, color: accent)
-                                    MonoText("\(window.attempts) attempts", size: .caption, weight: .regular,
-                                             color: DesignTokens.Surface.mutedText)
+                                    Text("\(InsightsEngine.weekdayName(window.weekday).capitalized) \(InsightsEngine.bucketLabel(window.bucket))")
+                                        .font(.custom(FontFamily.sans, size: 14))
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(accent)
+                                    Text("\(window.attempts) attempts")
+                                        .font(.custom(FontFamily.sans, size: 12))
+                                        .foregroundColor(DesignTokens.Surface.mutedText)
                                 }
                                 Spacer()
                             }
-                            .padding(8)
+                            .padding(12)
                             .background(DesignTokens.Surface.card)
-                            .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }
                     }
                 }
                 .padding(DesignTokens.Spacing.md)
             }
             .background(DesignTokens.Surface.bg)
-            .navigationTitle("RISK")
+            .navigationTitle("Risk")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -54,7 +69,6 @@ struct RiskExpandedView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 
     private func windowColor(_ level: RiskLevel) -> Color {

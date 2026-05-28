@@ -184,7 +184,7 @@ struct HabitMapApp: App {
                         try await MainActor.run {
                             try PersistenceController.seedIfNeeded(container.mainContext)
                         }
-                    } catch { print("Seed failed: \(error)") }
+                    } catch { }
                     await sync.syncToday()
                     await notifications.reschedule()
                 }

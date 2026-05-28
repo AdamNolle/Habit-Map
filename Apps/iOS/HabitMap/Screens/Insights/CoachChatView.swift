@@ -51,7 +51,7 @@ struct CoachChatView: View {
                 inputBar
             }
             .background(DesignTokens.Surface.bg)
-            .navigationTitle("COACH")
+            .navigationTitle("Coach")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -64,7 +64,6 @@ struct CoachChatView: View {
                 coach = HabitCoachFactory.make()
             }
         }
-        .preferredColorScheme(.dark)
     }
 
     private var unavailableBanner: some View {
@@ -85,22 +84,28 @@ struct CoachChatView: View {
 
     @ViewBuilder
     private func messageBubble(_ message: CoachChatMessage) -> some View {
+        let bubbleColor = message.role == .user ? DesignTokens.Accent.classicGreen : DesignTokens.Accent.lilac
         HStack {
             if message.role == .user { Spacer(minLength: 40) }
             VStack(alignment: .leading, spacing: 4) {
-                MonoText(message.role == .user ? "YOU" : "COACH",
-                         size: .caption, weight: .heavy,
-                         color: message.role == .user
-                            ? DesignTokens.Accent.classicGreen
-                            : DesignTokens.Accent.lilac)
-                MonoText(message.body, size: .footnote, weight: .regular, color: .white)
+                Text(message.role == .user ? "You" : "Coach")
+                    .font(.custom(FontFamily.sans, size: 10))
+                    .fontWeight(.semibold)
+                    .kerning(0.4)
+                    .textCase(.uppercase)
+                    .foregroundColor(bubbleColor)
+                Text(message.body)
+                    .font(.custom(FontFamily.sans, size: 14))
+                    .foregroundColor(DesignTokens.Surface.fg())
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(10)
             .background(DesignTokens.Surface.card)
-            .overlay(Rectangle().stroke(
-                message.role == .user ? DesignTokens.Accent.classicGreen : DesignTokens.Accent.lilac,
-                lineWidth: 1))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(bubbleColor.opacity(0.4), lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             if message.role == .coach { Spacer(minLength: 40) }
         }
     }
@@ -108,10 +113,14 @@ struct CoachChatView: View {
     private var inputBar: some View {
         HStack(spacing: 8) {
             TextField("Ask about your patterns…", text: $draft)
-                .font(.system(.body, design: .monospaced))
+                .font(.custom(FontFamily.sans, size: 15))
                 .padding(10)
-                .background(DesignTokens.Surface.tile)
-                .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 1))
+                .background(DesignTokens.Surface.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .submitLabel(.send)
                 .onSubmit { send() }
             Button(action: send) {

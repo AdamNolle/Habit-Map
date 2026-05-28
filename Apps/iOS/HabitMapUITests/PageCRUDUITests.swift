@@ -10,9 +10,10 @@ final class PageCRUDUITests: XCTestCase {
         XCTAssertTrue(managerButton.waitForExistence(timeout: 10))
         managerButton.tap()
 
-        XCTAssertTrue(app.navigationBars["PAGES"].waitForExistence(timeout: 5))
+        // v7 nav title is "Pages" (sentence case)
+        XCTAssertTrue(app.navigationBars["Pages"].waitForExistence(timeout: 5))
 
-        // Tap "NEW PAGE" row (accessibility label = "Add page")
+        // Tap "New page" row (accessibility label = "Add page")
         let addPageButton = app.buttons["Add page"].firstMatch
         XCTAssertTrue(addPageButton.waitForExistence(timeout: 5))
         addPageButton.tap()
@@ -28,9 +29,10 @@ final class PageCRUDUITests: XCTestCase {
         XCTAssertTrue(createButton.waitForExistence(timeout: 5))
         createButton.tap()
 
-        // Back to Pages Manager — WORK should appear.
-        let workLabel = app.descendants(matching: .any).matching(identifier: "WORK").firstMatch
-        XCTAssertTrue(workLabel.waitForExistence(timeout: 5) || app.staticTexts["WORK"].waitForExistence(timeout: 5),
-                      "Expected WORK page to appear in Pages Manager")
+        // Back to Pages Manager — "WORK" page appears.
+        // Row text is title-cased ("Work") but accessibilityLabel is set to the raw name.
+        let workLabel = app.staticTexts["WORK"].waitForExistence(timeout: 5)
+            || app.staticTexts["Work"].waitForExistence(timeout: 2)
+        XCTAssertTrue(workLabel, "Expected WORK page to appear in Pages Manager")
     }
 }

@@ -7,19 +7,35 @@ struct AddHabitStep3View: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-            MonoText("STEP 3 — WHEN", size: .caption, weight: .heavy,
-                     color: DesignTokens.Surface.mutedText)
+            Text("Step 3 — When")
+                .font(.custom(FontFamily.sans, size: 11))
+                .fontWeight(.semibold)
+                .kerning(0.5)
+                .textCase(.uppercase)
+                .foregroundColor(DesignTokens.Surface.mutedText)
 
             VStack(alignment: .leading, spacing: 8) {
-                MonoText.label("DAYS")
+                Text("Days")
+                    .font(.custom(FontFamily.sans, size: 11))
+                    .fontWeight(.semibold)
+                    .kerning(0.5)
+                    .textCase(.uppercase)
+                    .foregroundColor(DesignTokens.Surface.mutedText)
                 WeekdayPicker(mask: $draft.weekdayMask, accent: Color(hex: draft.accentHex))
             }
 
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    MonoText.label("REMINDER")
+                    Text("Reminder")
+                        .font(.custom(FontFamily.sans, size: 11))
+                        .fontWeight(.semibold)
+                        .kerning(0.5)
+                        .textCase(.uppercase)
+                        .foregroundColor(DesignTokens.Surface.mutedText)
                     Spacer()
-                    PixelToggle(isOn: $draft.reminderEnabled, accent: Color(hex: draft.accentHex))
+                    Toggle("", isOn: $draft.reminderEnabled)
+                        .tint(Color(hex: draft.accentHex))
+                        .labelsHidden()
                 }
                 if draft.reminderEnabled {
                     DatePicker("",
@@ -27,8 +43,8 @@ struct AddHabitStep3View: View {
                                displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .labelsHidden()
-                        .background(DesignTokens.Surface.tile)
-                        .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
+                        .background(DesignTokens.Surface.card)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
         }

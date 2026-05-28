@@ -5,8 +5,6 @@ final class SettingsNavigationUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // System may present a notification permission alert when SETUP is tapped.
-        // Tap "Don't Allow" / Allow to dismiss; either is fine for this test.
         addUIInterruptionMonitor(withDescription: "Notification Permission") { alert in
             if alert.buttons["Don't Allow"].exists {
                 alert.buttons["Don't Allow"].tap(); return true
@@ -17,15 +15,16 @@ final class SettingsNavigationUITests: XCTestCase {
             return false
         }
 
-        let setupTab = app.buttons["SETUP tab"].firstMatch
-        XCTAssertTrue(setupTab.waitForExistence(timeout: 10))
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 10))
+        let setupTab = tabBar.buttons.matching(NSPredicate(format: "label CONTAINS 'Setup'")).firstMatch
+        XCTAssertTrue(setupTab.waitForExistence(timeout: 5))
         setupTab.tap()
-        // Force the interruption monitor to fire if there's a pending system alert.
         app.tap()
 
-        let header = app.descendants(matching: .any).matching(identifier: "SETTINGS").firstMatch
-        XCTAssertTrue(header.waitForExistence(timeout: 15)
-                      || app.staticTexts["SETTINGS"].waitForExistence(timeout: 5),
-                      "Expected SETTINGS header after tapping SETUP tab")
+        // v7 SettingsView renders "Settings" as a Display serif hero
+        let header = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Settings'")).firstMatch
+        XCTAssertTrue(header.waitForExistence(timeout: 15),
+                      "Expected Settings hero text after tapping Setup tab")
     }
 }

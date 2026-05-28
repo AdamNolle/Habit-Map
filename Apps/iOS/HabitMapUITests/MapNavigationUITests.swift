@@ -5,17 +5,22 @@ final class MapNavigationUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        let mapTab = app.buttons["MAP tab"].firstMatch
-        XCTAssertTrue(mapTab.waitForExistence(timeout: 10))
+        // UITabBarButton labels include the role suffix on iOS: "Map tab"
+        // Use tabBars query to scope to the tab bar specifically.
+        let tabBar = app.tabBars.firstMatch
+        XCTAssertTrue(tabBar.waitForExistence(timeout: 10))
+        let mapTab = tabBar.buttons.matching(NSPredicate(format: "label CONTAINS 'Map'")).firstMatch
+        XCTAssertTrue(mapTab.waitForExistence(timeout: 5))
         mapTab.tap()
 
-        let heatMapHeader = app.descendants(matching: .any).matching(identifier: "HEAT MAP").firstMatch
-        XCTAssertTrue(heatMapHeader.waitForExistence(timeout: 5)
-                      || app.staticTexts["HEAT MAP"].waitForExistence(timeout: 5),
-                      "Expected HEAT MAP header after tapping MAP tab")
+        // v7 MapView hero text is "The atlas"
+        let header = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'atlas'")).firstMatch
+        XCTAssertTrue(header.waitForExistence(timeout: 5),
+                      "Expected 'The atlas' hero text after tapping Map tab")
 
-        let allChip = app.buttons["ALL"].firstMatch
+        // "All habits" filter chip
+        let allChip = app.buttons.matching(NSPredicate(format: "label CONTAINS 'All habit'")).firstMatch
         XCTAssertTrue(allChip.waitForExistence(timeout: 5),
-                      "Expected ALL filter chip on MapView")
+                      "Expected 'All habits' filter chip on MapView")
     }
 }

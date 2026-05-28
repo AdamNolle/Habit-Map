@@ -75,7 +75,9 @@ struct PageContentView: View {
         }
         .background(DesignTokens.Surface.bg)
         .sheet(isPresented: $showPagesManager) {
-            PagesManagerView().environmentObject(repo)
+            PagesManagerView()
+                .environmentObject(repo)
+                .environmentObject(haptics)
         }
     }
 

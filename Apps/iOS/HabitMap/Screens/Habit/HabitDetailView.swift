@@ -21,66 +21,58 @@ struct HabitDetailView: View {
                         Spacer()
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        MonoText.label("NAME")
-                        TextField("name", text: $habit.name)
-                            .textInputAutocapitalization(.characters)
-                            .font(.system(.body, design: .monospaced).weight(.heavy))
-                            .padding(10)
-                            .background(DesignTokens.Surface.tile)
-                            .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
+                    fieldSection("Name") {
+                        TextField("e.g. Drink Water", text: $habit.name)
+                            .textInputAutocapitalization(.words)
+                            .glassTextField()
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        MonoText.label("EMOJI")
+                    fieldSection("Emoji") {
                         EmojiPicker(selected: $habit.emoji, accent: habit.accentColor)
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        MonoText.label("ACCENT")
+                    fieldSection("Accent") {
                         AccentSwatchPicker(selectedHex: $habit.accentHex)
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        MonoText.label("DAYS")
+                    fieldSection("Days") {
                         WeekdayPicker(mask: $habit.weekdayMask, accent: habit.accentColor)
                     }
 
                     if habit.type == .manualMultiple {
-                        VStack(alignment: .leading, spacing: 8) {
-                            MonoText.label("TARGET REPS")
+                        fieldSection("Target reps") {
                             HStack {
                                 Stepper("\(habit.targetReps)", value: $habit.targetReps, in: 1...20)
                                     .labelsHidden()
                                 Spacer()
-                                MonoText("\(habit.targetReps)", size: .body, weight: .heavy,
-                                         color: habit.accentColor)
+                                Text("\(habit.targetReps)")
+                                    .font(.custom(FontFamily.mono, size: 17))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(habit.accentColor)
                             }
-                            .padding(10)
-                            .background(DesignTokens.Surface.tile)
-                            .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
+                            .glassField()
                         }
                     }
 
                     VStack(spacing: 10) {
                         if habit.isArchived {
-                            AppButton("UNARCHIVE", style: .glass, accent: habit.accentColor) {
+                            AppButton("Unarchive", style: .glass, accent: habit.accentColor) {
                                 habit.isArchived = false
                                 try? repo.context.save()
                             }
                         } else {
-                            AppButton("ARCHIVE", style: .glass, accent: habit.accentColor) {
+                            AppButton("Archive", style: .glass, accent: habit.accentColor) {
                                 try? repo.archiveHabit(habit)
                                 dismiss()
                             }
                         }
-                        AppButton("DELETE", style: .destructive) { showDeleteAlert = true }
+                        AppButton("Delete", style: .destructive) { showDeleteAlert = true }
                     }
                 }
                 .padding(DesignTokens.Spacing.md)
             }
             .background(DesignTokens.Surface.bg)
-            .navigationTitle("HABIT")
+            .navigationTitle("Habit")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -100,6 +92,44 @@ struct HabitDetailView: View {
                 Text("All completion history will be permanently removed.")
             }
         }
-        .preferredColorScheme(.dark)
+    }
+
+    @ViewBuilder
+    private func fieldSection<Content: View>(_ label: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label)
+                .font(.custom(FontFamily.sans, size: 11))
+                .fontWeight(.semibold)
+                .kerning(0.5)
+                .textCase(.uppercase)
+                .foregroundColor(DesignTokens.Surface.mutedText)
+            content()
+        }
+    }
+}
+
+private extension View {
+    func glassTextField() -> some View {
+        self
+            .font(.custom(FontFamily.sans, size: 16))
+            .fontWeight(.medium)
+            .padding(12)
+            .background(DesignTokens.Surface.card)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    func glassField() -> some View {
+        self
+            .padding(12)
+            .background(DesignTokens.Surface.card)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }

@@ -15,52 +15,68 @@ struct MetricPickerView: View {
     let accent: Color
 
     static let options: [MetricOption] = [
-        .init(id: .stepCount, label: "STEPS", emoji: "👟", defaultGoal: 10000, unit: "steps"),
-        .init(id: .workouts, label: "WORKOUTS", emoji: "🏋️", defaultGoal: 1, unit: "sessions"),
-        .init(id: .mindfulMinutes, label: "MINDFUL", emoji: "🧘", defaultGoal: 10, unit: "minutes"),
-        .init(id: .sleep, label: "SLEEP", emoji: "💤", defaultGoal: 420, unit: "minutes"),
-        .init(id: .standHours, label: "STAND", emoji: "🧍", defaultGoal: 12, unit: "hours"),
-        .init(id: .activeEnergy, label: "CALORIES", emoji: "🔥", defaultGoal: 500, unit: "kcal"),
-        .init(id: .hydration, label: "HYDRATION", emoji: "💧", defaultGoal: 2000, unit: "ml"),
-        .init(id: .distanceWalkingRunning, label: "DISTANCE", emoji: "🏃", defaultGoal: 5000, unit: "meters")
+        .init(id: .stepCount, label: "Steps", emoji: "👟", defaultGoal: 10000, unit: "steps"),
+        .init(id: .workouts, label: "Workouts", emoji: "🏋️", defaultGoal: 1, unit: "sessions"),
+        .init(id: .mindfulMinutes, label: "Mindful", emoji: "🧘", defaultGoal: 10, unit: "minutes"),
+        .init(id: .sleep, label: "Sleep", emoji: "💤", defaultGoal: 420, unit: "minutes"),
+        .init(id: .standHours, label: "Stand", emoji: "🧍", defaultGoal: 12, unit: "hours"),
+        .init(id: .activeEnergy, label: "Calories", emoji: "🔥", defaultGoal: 500, unit: "kcal"),
+        .init(id: .hydration, label: "Hydration", emoji: "💧", defaultGoal: 2000, unit: "ml"),
+        .init(id: .distanceWalkingRunning, label: "Distance", emoji: "🏃", defaultGoal: 5000, unit: "meters")
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 2), spacing: 6) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
                 ForEach(Self.options) { opt in
+                    let selected = metric == opt.id
                     Button {
                         metric = opt.id
                         goal = opt.defaultGoal
                     } label: {
-                        VStack(spacing: 4) {
+                        VStack(spacing: 6) {
                             Text(opt.emoji).font(.system(size: 22))
-                            MonoText(opt.label, size: .caption, weight: .heavy,
-                                     color: metric == opt.id ? .black : accent)
+                            Text(opt.label)
+                                .font(.custom(FontFamily.sans, size: 12))
+                                .fontWeight(.semibold)
+                                .foregroundColor(selected ? .black : accent)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(metric == opt.id ? accent : DesignTokens.Surface.tile)
-                        .overlay(Rectangle().stroke(metric == opt.id ? accent.darker(by: 0.2) : DesignTokens.Surface.tileBorder,
-                                                   lineWidth: 2))
+                        .padding(.vertical, 14)
+                        .background(selected ? accent : DesignTokens.Surface.card)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(selected ? accent.darker(by: 0.2) : DesignTokens.Surface.hairline(), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(opt.label)
-                    .accessibilityAddTraits(metric == opt.id ? [.isButton, .isSelected] : .isButton)
+                    .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
                 }
             }
 
             if let selected = metric, let opt = Self.options.first(where: { $0.id == selected }) {
                 VStack(alignment: .leading, spacing: 8) {
-                    MonoText.label("DAILY GOAL")
+                    Text("Daily goal")
+                        .font(.custom(FontFamily.sans, size: 11))
+                        .fontWeight(.semibold)
+                        .kerning(0.5)
+                        .textCase(.uppercase)
+                        .foregroundColor(DesignTokens.Surface.mutedText)
                     HStack(spacing: DesignTokens.Spacing.md) {
                         AppButton("−", style: .glass, accent: accent) {
                             goal = max(stepIncrement(for: opt), goal - stepIncrement(for: opt))
                         }.frame(width: 56)
                         VStack(spacing: 2) {
-                            MonoText("\(Int(goal))", size: .title, weight: .heavy, color: accent)
-                            MonoText(opt.unit.uppercased(), size: .caption, weight: .heavy,
-                                     color: DesignTokens.Surface.mutedText)
+                            Text("\(Int(goal))")
+                                .font(.custom(FontFamily.mono, size: 28))
+                                .fontWeight(.bold)
+                                .foregroundColor(accent)
+                            Text(opt.unit)
+                                .font(.custom(FontFamily.sans, size: 11))
+                                .fontWeight(.medium)
+                                .foregroundColor(DesignTokens.Surface.mutedText)
                         }
                         .frame(maxWidth: .infinity)
                         AppButton("+", style: .glass, accent: accent) {

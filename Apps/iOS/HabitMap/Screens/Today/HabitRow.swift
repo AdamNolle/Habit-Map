@@ -100,7 +100,9 @@ struct HabitRow: View {
             } label: { Label("Delete", systemImage: "trash") }
         }
         .sheet(isPresented: $showDetail) {
-            HabitDetailView(habit: habit).environmentObject(repo)
+            HabitDetailView(habit: habit)
+                .environmentObject(repo)
+                .environmentObject(haptics)
         }
         .task {
             if habit.type == .autoHealth, let metric = habit.healthMetric {

@@ -15,34 +15,49 @@ struct DayDetailSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
-                    PixelText(headerDate, pixelSize: 3, color: accent)
+                    Text(headerDate)
+                        .font(.custom(FontFamily.mono, size: 13))
+                        .fontWeight(.semibold)
+                        .foregroundColor(accent)
 
                     VStack(spacing: 6) {
                         ForEach(scheduled) { habit in
                             habitRow(habit)
                         }
                         if scheduled.isEmpty {
-                            MonoText("REST DAY", size: .footnote, weight: .heavy,
-                                     color: DesignTokens.Surface.mutedText)
+                            Text("Rest day")
+                                .font(.custom(FontFamily.sans, size: 14))
+                                .fontWeight(.medium)
+                                .foregroundColor(DesignTokens.Surface.mutedText)
                                 .padding(.vertical, 24)
                                 .frame(maxWidth: .infinity)
                         }
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
-                        MonoText.label("NOTE")
+                        Text("Note")
+                            .font(.custom(FontFamily.sans, size: 11))
+                            .fontWeight(.semibold)
+                            .kerning(0.5)
+                            .textCase(.uppercase)
+                            .foregroundColor(DesignTokens.Surface.mutedText)
                         TextEditor(text: $note)
                             .scrollContentBackground(.hidden)
-                            .background(DesignTokens.Surface.tile)
-                            .overlay(Rectangle().stroke(DesignTokens.Surface.tileBorder, lineWidth: 2))
+                            .font(.custom(FontFamily.sans, size: 15))
+                            .padding(12)
+                            .background(DesignTokens.Surface.card)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                             .frame(minHeight: 100)
-                            .font(.system(.body, design: .monospaced))
                     }
                 }
                 .padding(DesignTokens.Spacing.md)
             }
             .background(DesignTokens.Surface.bg)
-            .navigationTitle("DAY")
+            .navigationTitle("Day")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -54,7 +69,6 @@ struct DayDetailSheet: View {
             }
             .onAppear { loadNote() }
         }
-        .preferredColorScheme(.dark)
     }
 
     private var scheduled: [Habit] {
@@ -63,7 +77,7 @@ struct DayDetailSheet: View {
 
     private var headerDate: String {
         let f = DateFormatter()
-        f.dateFormat = "EEE - MMM d"
+        f.dateFormat = "EEE · MMM d"
         return f.string(from: date).uppercased()
     }
 
@@ -75,21 +89,29 @@ struct DayDetailSheet: View {
                       isToday: Calendar.current.isDateInToday(date),
                       size: 28)
             VStack(alignment: .leading, spacing: 2) {
-                MonoText(habit.name, size: .footnote, weight: .heavy, color: habit.accentColor)
-                MonoText(progressLabel(habit), size: .caption, weight: .heavy,
-                         color: DesignTokens.Surface.mutedText)
+                Text(habit.name.titleCased)
+                    .font(.custom(FontFamily.sans, size: 14))
+                    .fontWeight(.semibold)
+                    .foregroundColor(habit.accentColor)
+                Text(progressLabel(habit))
+                    .font(.custom(FontFamily.mono, size: 12))
+                    .foregroundColor(DesignTokens.Surface.mutedText)
             }
             Spacer()
         }
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
         .background(DesignTokens.Surface.card)
-        .overlay(Rectangle().stroke(DesignTokens.Surface.cardBorder, lineWidth: 1))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(DesignTokens.Surface.hairline(), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private func progressLabel(_ habit: Habit) -> String {
         switch habit.type {
-        case .manualOnce:    return habit.progressFraction(on: date) >= 1.0 ? "DONE" : "MISSED"
+        case .manualOnce:    return habit.progressFraction(on: date) >= 1.0 ? "Done" : "Missed"
         case .manualMultiple:
             let reps = habit.completion(on: date)?.reps ?? 0
             return "\(reps) / \(habit.targetReps)"
@@ -98,7 +120,7 @@ struct DayDetailSheet: View {
             let goal = Int(habit.healthGoal ?? Double(habit.targetReps))
             return "\(reps) / \(goal)"
         case .inverse:
-            return (habit.completion(on: date)?.slipped == true) ? "SLIPPED" : "CLEAN"
+            return (habit.completion(on: date)?.slipped == true) ? "Slipped" : "Clean"
         }
     }
 
