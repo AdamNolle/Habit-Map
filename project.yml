@@ -72,6 +72,8 @@ targets:
           - CloudKit
         com.apple.developer.healthkit: true
         com.apple.developer.healthkit.access: []
+        com.apple.security.application-groups:
+          - group.com.adam.habitmap
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adam.habitmap
@@ -80,6 +82,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
     dependencies:
       - package: HabitMapCore
+      - target: HabitMapWidgets
 
   HabitMapCoreTests:
     type: bundle.unit-test
@@ -111,6 +114,32 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: HabitMap
+
+  HabitMapWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Apps/iOS/HabitMapWidgets
+        excludes:
+          - "**/.DS_Store"
+    info:
+      path: Apps/iOS/HabitMapWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Habit Map
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Apps/iOS/HabitMapWidgets/HabitMapWidgets.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.adam.habitmap
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adam.habitmap.widgets
+        INFOPLIST_KEY_CFBundleDisplayName: Habit Map
+    dependencies:
+      - package: HabitMapCore
 
 schemes:
   HabitMap:

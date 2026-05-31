@@ -102,14 +102,11 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
     }
 
     public static func habitIdentifier(for id: UUID) -> String {
-        "habitmap.habit.\(id.uuidString)"
+        HabitNotificationID.identifier(for: id)
     }
 
     public static func parseHabitID(from identifier: String) -> UUID? {
-        let prefix = "habitmap.habit."
-        guard identifier.hasPrefix(prefix) else { return nil }
-        let raw = String(identifier.dropFirst(prefix.count))
-        return UUID(uuidString: raw)
+        HabitNotificationID.parse(identifier)
     }
 
     private func pendingCount() -> Int {
@@ -133,9 +130,13 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
                                             didReceive response: UNNotificationResponse,
                                             withCompletionHandler completionHandler: @escaping () -> Void) {
         let identifier = response.notification.request.identifier
+        var userInfo: [AnyHashable: Any] = ["identifier": identifier]
+        if let habitID = HabitNotificationID.parse(identifier) {
+            userInfo["habitID"] = habitID
+        }
         NotificationCenter.default.post(name: .habitMapNotificationTapped,
                                         object: nil,
-                                        userInfo: ["identifier": identifier])
+                                        userInfo: userInfo)
         completionHandler()
     }
 }
@@ -156,7 +157,10 @@ struct HabitMapApp: App {
 
     init() {
         do {
-            let container = try PersistenceController.makeContainer(enableCloudKit: false)
+            let container = try PersistenceController.makeContainer(
+                enableCloudKit: false,
+                appGroupID: PersistenceController.appGroupID
+            )
             self.container = container
             let repo = HabitRepository(context: container.mainContext)
             let provider: HealthKitProviding = HealthKitService()

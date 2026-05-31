@@ -95,6 +95,12 @@ struct TodayView: View {
                 .environmentObject(repo)
                 .environmentObject(haptics)
         }
+        .onReceive(NotificationCenter.default.publisher(for: .habitMapNotificationTapped)) { note in
+            // Route a per-habit notification tap to the page that habit lives on.
+            guard let habitID = note.userInfo?["habitID"] as? UUID,
+                  let pageID = HabitNotificationID.pageID(forHabit: habitID, in: activePages) else { return }
+            selectedPageID = pageID
+        }
     }
 }
 
