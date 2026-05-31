@@ -424,4 +424,3 @@ private struct DisplayModeButton: View {
         .buttonStyle(.plain)
     }
 }
-

@@ -12,8 +12,30 @@ opt_in_rules:
   - first_where
   - force_unwrapping
 
+# Short identifiers are idiomatic here (SwiftUI ForEach indices `i`, math `r/g/b`,
+# date `f`ormatters). Keep the rule for case/style checks but don't error on length.
+identifier_name:
+  min_length:
+    warning: 1
+    error: 1
+  max_length:
+    warning: 50
+    error: 60
+
+# RGB(A) colour tuples in the design system legitimately carry 3–4 members.
+large_tuple:
+  warning: 3
+  error: 5
+
+# Feature-extraction / reducer functions are intentionally branch-heavy; surface
+# high complexity as a warning rather than failing the build on it.
+cyclomatic_complexity:
+  warning: 12
+  error: 30
+
 excluded:
   - Packages/HabitMapCore/.build
   - Apps/iOS/HabitMapUITests
   - .build
+  - .claude
   - DerivedData

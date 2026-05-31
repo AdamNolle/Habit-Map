@@ -6,15 +6,15 @@ import SnapshotTesting
 final class HabitCellSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
 
-    func test_empty()       { snap(.empty) }
-    func test_p25()         { snap(.p25) }
-    func test_p50()         { snap(.p50) }
-    func test_p75()         { snap(.p75) }
-    func test_p100()        { snap(.p100) }
-    func test_miss()        { snap(.miss) }
-    func test_rest()        { snap(.rest) }
-    func test_future()      { snap(.future) }
-    func test_today_p50()   { snap(.p50, isToday: true) }
+    func test_empty() { snap(.empty) }
+    func test_p25() { snap(.p25) }
+    func test_p50() { snap(.p50) }
+    func test_p75() { snap(.p75) }
+    func test_p100() { snap(.p100) }
+    func test_miss() { snap(.miss) }
+    func test_rest() { snap(.rest) }
+    func test_future() { snap(.future) }
+    func test_today_p50() { snap(.p50, isToday: true) }
     func test_today_empty() { snap(.empty, isToday: true) }
 
     func test_levelMapping() {

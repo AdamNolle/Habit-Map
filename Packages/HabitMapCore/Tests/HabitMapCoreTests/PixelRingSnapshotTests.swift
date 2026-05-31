@@ -6,11 +6,11 @@ import SnapshotTesting
 final class PixelRingSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
 
-    func test_empty()   { snap(filled: 0) }
+    func test_empty() { snap(filled: 0) }
     func test_quarter() { snap(filled: 3) }
-    func test_half()    { snap(filled: 6) }
+    func test_half() { snap(filled: 6) }
     func test_three_q() { snap(filled: 9) }
-    func test_full()    { snap(filled: 12) }
+    func test_full() { snap(filled: 12) }
 
     func test_percentMapping() {
         XCTAssertEqual(PixelRing.segments(for: 0.0), 0)

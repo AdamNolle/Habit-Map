@@ -24,7 +24,7 @@ public struct WeekdayPicker: View {
                                                    lineWidth: 2))
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"][idx])
+                .accessibilityLabel(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][idx])
                 .accessibilityValue(isOn ? "selected" : "not selected")
                 .accessibilityAddTraits(.isButton)
             }

@@ -8,7 +8,7 @@ struct MapView: View {
     @EnvironmentObject private var repo: HabitRepository
     @EnvironmentObject private var haptics: Haptics
 
-    @State private var selectedPageID: UUID? = nil
+    @State private var selectedPageID: UUID?
     @State private var detailDate: Date?
     private let stats = StatsService()
 

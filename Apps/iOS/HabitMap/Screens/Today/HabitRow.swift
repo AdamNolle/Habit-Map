@@ -198,8 +198,7 @@ struct HabitRow: View {
                 do {
                     let newState = try await sync.provider.requestAuthorization(for: [metric])
                     healthAuth = newState
-                    if case .authorized = newState { await sync.syncHabit(habit) }
-                    else if case .denied = newState { healthAuth = .denied(timesDenied: 1) }
+                    if case .authorized = newState { await sync.syncHabit(habit) } else if case .denied = newState { healthAuth = .denied(timesDenied: 1) }
                 } catch { healthAuth = .denied(timesDenied: 1) }
             }
         case .denied(let n) where n < 2:
@@ -207,8 +206,7 @@ struct HabitRow: View {
                 do {
                     let newState = try await sync.provider.requestAuthorization(for: [metric])
                     healthAuth = newState
-                    if case .authorized = newState { await sync.syncHabit(habit) }
-                    else { healthAuth = .denied(timesDenied: n + 1) }
+                    if case .authorized = newState { await sync.syncHabit(habit) } else { healthAuth = .denied(timesDenied: n + 1) }
                 } catch { healthAuth = .denied(timesDenied: n + 1) }
             }
         case .denied:

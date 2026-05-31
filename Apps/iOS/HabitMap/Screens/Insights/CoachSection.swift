@@ -65,7 +65,7 @@ struct CoachSection: View {
                          color: DesignTokens.Surface.miss)
             }
 
-            if (coach?.supportsFreeFormChat ?? false) {
+            if coach?.supportsFreeFormChat ?? false {
                 HStack {
                     Spacer()
                     Button(action: onAskMore) {

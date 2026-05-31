@@ -11,7 +11,7 @@ struct WizardDraft {
     var restDayMask: Int8 = 0
     var reminderEnabled: Bool = false
     var reminderTime: Date = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date()) ?? Date()
-    var healthMetric: HealthMetric? = nil
+    var healthMetric: HealthMetric?
     var healthGoal: Double = 10000
 }
 
