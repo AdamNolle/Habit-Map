@@ -3,6 +3,7 @@ import XCTest
 final class PageCRUDUITests: XCTestCase {
     func test_openPagesManagerAndAddPage() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         // Tap the grid icon in header to open Pages Manager.

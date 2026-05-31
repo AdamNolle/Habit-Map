@@ -3,6 +3,7 @@ import XCTest
 final class TodayFlowUITests: XCTestCase {
     func test_launchesAndShowsHealthPage() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         // Habits are displayed title-cased in HabitRow (e.g. "Drink Water").

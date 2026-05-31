@@ -3,6 +3,7 @@ import XCTest
 final class MapNavigationUITests: XCTestCase {
     func test_tapMapTab_revealsHeatMap() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         // UITabBarButton labels include the role suffix on iOS: "Map tab"

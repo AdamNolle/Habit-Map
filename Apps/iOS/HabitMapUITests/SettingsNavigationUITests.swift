@@ -3,6 +3,7 @@ import XCTest
 final class SettingsNavigationUITests: XCTestCase {
     func test_tapSetupTab_revealsSettingsHeader() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         addUIInterruptionMonitor(withDescription: "Notification Permission") { alert in

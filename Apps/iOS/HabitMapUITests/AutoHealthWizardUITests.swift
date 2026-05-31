@@ -6,6 +6,7 @@ final class AutoHealthWizardUITests: XCTestCase {
     /// HealthKit permission sheet which is system-modal and brittle in CI.
     func test_wizard_reachesAutoHealthOptionAndPicksSteps() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         let fab = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Add habit'")).firstMatch

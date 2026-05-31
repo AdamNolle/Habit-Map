@@ -3,6 +3,7 @@ import XCTest
 final class HabitWizardUITests: XCTestCase {
     func test_createHabitViaWizard() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         // FAB accessibility label is "Add habit to <PAGE>"; match by prefix.

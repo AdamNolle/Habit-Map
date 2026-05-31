@@ -157,9 +157,14 @@ struct HabitMapApp: App {
 
     init() {
         do {
+            // UI tests run against a clean in-memory store: deterministic, and
+            // immune to hosted-CI simulators where the on-disk store dir can be
+            // missing/read-only (CoreData errno 2/30).
+            let isUITesting = ProcessInfo.processInfo.arguments.contains("-uitesting")
             let container = try PersistenceController.makeContainer(
+                inMemory: isUITesting,
                 enableCloudKit: false,
-                appGroupID: PersistenceController.appGroupID
+                appGroupID: isUITesting ? nil : PersistenceController.appGroupID
             )
             self.container = container
             let repo = HabitRepository(context: container.mainContext)

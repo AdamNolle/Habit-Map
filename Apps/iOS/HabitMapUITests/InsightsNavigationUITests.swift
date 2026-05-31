@@ -3,6 +3,7 @@ import XCTest
 final class InsightsNavigationUITests: XCTestCase {
     func test_tapStatsTab_revealsInsightsHeader() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-uitesting"]
         app.launch()
 
         let tabBar = app.tabBars.firstMatch
