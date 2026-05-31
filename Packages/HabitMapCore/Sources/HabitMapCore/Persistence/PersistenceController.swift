@@ -22,12 +22,12 @@ public enum PersistenceController {
             return try ModelContainer(for: schema, configurations: [config])
         }
 
-        // Prefer a shared App Group store so the widget reads the same data. Only
-        // when the group container actually resolves (provisioned device / sim) —
-        // otherwise fall through to the app-local store so launch never fails on
-        // an unsigned build.
-        if let appGroupID,
-           FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) != nil {
+        // Prefer a shared App Group store so the widget reads the same data — but
+        // only when the group container is actually writeable. On an unsigned build
+        // (CI / no provisioning) the directory can resolve yet be read-only, which
+        // would hand back a broken store; in that case fall through to the
+        // app-local store so the app and its tests behave normally.
+        if let appGroupID, Self.appGroupIsWriteable(appGroupID) {
             let groupConfig = ModelConfiguration(
                 schema: schema,
                 groupContainer: .identifier(appGroupID),
@@ -43,6 +43,24 @@ public enum PersistenceController {
                                  cloudKitDatabase: .private(cloudKitContainerID))
             : ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         return try ModelContainer(for: schema, configurations: [config])
+    }
+
+    /// Resolves the App Group container and confirms it's actually writeable with a
+    /// throwaway probe file. Guards against an unsigned build where the path exists
+    /// but is read-only.
+    private static func appGroupIsWriteable(_ appGroupID: String) -> Bool {
+        guard let url = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupID) else {
+            return false
+        }
+        let probe = url.appendingPathComponent(".habitmap-write-probe-\(UUID().uuidString)")
+        do {
+            try Data().write(to: probe)
+            try? FileManager.default.removeItem(at: probe)
+            return true
+        } catch {
+            return false
+        }
     }
 
     @MainActor
