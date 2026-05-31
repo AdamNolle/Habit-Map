@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class InsightCardSnapshotTests: XCTestCase {
+final class InsightCardSnapshotTests: SnapshotTestCase {
     private func host<V: View>(_ view: V) -> some View {
         view.frame(width: 360).padding(16).background(Color.black).fixedSize()
     }

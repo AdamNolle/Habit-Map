@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class EditorialLegendSnapshotTests: XCTestCase {
+final class EditorialLegendSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
 
     func test_allDone() {

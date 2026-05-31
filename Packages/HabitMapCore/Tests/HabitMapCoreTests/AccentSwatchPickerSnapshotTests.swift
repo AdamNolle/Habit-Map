@@ -4,7 +4,7 @@ import SnapshotTesting
 @testable import HabitMapCore
 
 @MainActor
-final class AccentSwatchPickerSnapshotTests: XCTestCase {
+final class AccentSwatchPickerSnapshotTests: SnapshotTestCase {
     func test_picker_default() {
         let view = AccentSwatchPicker(selectedHex: .constant("#2BFF5F"))
             .environmentObject(Haptics())

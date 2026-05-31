@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class StreakCardSnapshotTests: XCTestCase {
+final class StreakCardSnapshotTests: SnapshotTestCase {
     func test_default() {
         let view = StreakCard(consistency: 0.81, currentStreak: 12, bestStreak: 34,
                               accent: Color(hex: "#2BFF5F"))

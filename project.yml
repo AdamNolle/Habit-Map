@@ -127,3 +127,22 @@ schemes:
       config: Debug
     archive:
       config: Release
+
+  # Deterministic logic-only scheme used as the blocking CI gate.
+  # HABITMAP_SKIP_SNAPSHOTS=1 makes every SnapshotTestCase subclass skip, so the
+  # gate never depends on host-specific pixel rendering. UI tests are excluded
+  # (slow + flaky on hosted runners); the full HabitMap scheme covers them.
+  HabitMap-CI:
+    build:
+      targets:
+        HabitMap: all
+        HabitMapCoreTests: [test]
+    test:
+      targets:
+        - HabitMapCoreTests
+      environmentVariables:
+        - variable: HABITMAP_SKIP_SNAPSHOTS
+          value: "1"
+          isEnabled: true
+    run:
+      config: Debug

@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class CalendarHeatmapSnapshotTests: XCTestCase {
+final class CalendarHeatmapSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
 
     func test_emptyHabits_36weeks() {

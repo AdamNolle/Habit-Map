@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class RiskHeatmapSnapshotTests: XCTestCase {
+final class RiskHeatmapSnapshotTests: SnapshotTestCase {
     func test_empty() {
         let view = RiskHeatmap(forecast: .empty, accent: Color(hex: "#2BFF5F"))
             .padding(16).background(Color.black).fixedSize()

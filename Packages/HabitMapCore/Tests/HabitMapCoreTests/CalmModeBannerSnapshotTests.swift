@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class CalmModeBannerSnapshotTests: XCTestCase {
+final class CalmModeBannerSnapshotTests: SnapshotTestCase {
     func test_calmModeBanner() {
         let view = CalmModeBanner(onManage: {}, onDismiss: {})
             .frame(width: 360)

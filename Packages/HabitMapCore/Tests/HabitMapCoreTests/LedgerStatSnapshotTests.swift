@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class LedgerStatSnapshotTests: XCTestCase {
+final class LedgerStatSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
 
     func test_withoutPip() {

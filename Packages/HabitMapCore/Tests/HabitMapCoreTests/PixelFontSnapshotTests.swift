@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class PixelFontSnapshotTests: XCTestCase {
+final class PixelFontSnapshotTests: SnapshotTestCase {
     func test_singleLetter_A() {
         let view = PixelText("A", pixelSize: 4, color: .white)
             .frame(width: 24, height: 32)

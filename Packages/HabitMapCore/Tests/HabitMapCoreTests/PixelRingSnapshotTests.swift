@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class PixelRingSnapshotTests: XCTestCase {
+final class PixelRingSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
 
     func test_empty()   { snap(filled: 0) }

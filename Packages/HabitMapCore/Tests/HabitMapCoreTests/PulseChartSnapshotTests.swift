@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class PulseChartSnapshotTests: XCTestCase {
+final class PulseChartSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
     private let ramp: [Double] = (0..<30).map { Double($0) / 29.0 }
     private let flat: [Double] = Array(repeating: 0.7, count: 30)

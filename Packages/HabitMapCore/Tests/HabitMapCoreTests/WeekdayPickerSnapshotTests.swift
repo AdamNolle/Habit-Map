@@ -4,7 +4,7 @@ import SnapshotTesting
 @testable import HabitMapCore
 
 @MainActor
-final class WeekdayPickerSnapshotTests: XCTestCase {
+final class WeekdayPickerSnapshotTests: SnapshotTestCase {
     private func wrap(_ view: some View) -> some View {
         view.environmentObject(Haptics()).padding(16).background(Color.black).fixedSize()
     }

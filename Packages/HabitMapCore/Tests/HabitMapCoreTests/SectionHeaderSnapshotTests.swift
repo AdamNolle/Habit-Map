@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class SectionHeaderSnapshotTests: XCTestCase {
+final class SectionHeaderSnapshotTests: SnapshotTestCase {
     func test_titleOnly() {
         snap(SectionHeader("By page"))
     }

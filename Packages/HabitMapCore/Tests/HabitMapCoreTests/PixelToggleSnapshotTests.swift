@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class PixelToggleSnapshotTests: XCTestCase {
+final class PixelToggleSnapshotTests: SnapshotTestCase {
     func test_off() {
         let view = PixelToggle(isOn: .constant(false))
             .padding(16).background(Color.black).fixedSize()

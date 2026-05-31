@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class MiniIconSnapshotTests: XCTestCase {
+final class MiniIconSnapshotTests: SnapshotTestCase {
     func test_bell() {
         snap(MiniIcon("bell.fill", color: DesignTokens.Semantic.warn))
     }

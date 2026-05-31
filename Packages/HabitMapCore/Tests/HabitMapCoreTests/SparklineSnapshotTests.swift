@@ -3,7 +3,7 @@ import SwiftUI
 import SnapshotTesting
 @testable import HabitMapCore
 
-final class SparklineSnapshotTests: XCTestCase {
+final class SparklineSnapshotTests: SnapshotTestCase {
     private let accent = Color(hex: "#2BFF5F")
     private let rising: [Double] = [0.1, 0.2, 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.0]
     private let volatile: [Double] = [1.0, 0.0, 1.0, 0.0, 1.0, 0.5, 0.8, 0.2, 0.9, 0.4]

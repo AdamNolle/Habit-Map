@@ -4,7 +4,7 @@ import SnapshotTesting
 import SwiftData
 @testable import HabitMapCore
 
-final class YearGridSnapshotTests: XCTestCase {
+final class YearGridSnapshotTests: SnapshotTestCase {
     @MainActor
     func test_emptyGrid() {
         let view = YearGrid(habits: [], accent: Color(hex: "#2BFF5F")) { _ in }

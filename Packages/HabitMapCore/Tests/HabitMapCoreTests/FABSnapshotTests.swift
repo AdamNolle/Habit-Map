@@ -4,7 +4,7 @@ import SnapshotTesting
 @testable import HabitMapCore
 
 @MainActor
-final class FABSnapshotTests: XCTestCase {
+final class FABSnapshotTests: SnapshotTestCase {
     func test_fab() {
         let view = FAB { }
             .environmentObject(Haptics())
