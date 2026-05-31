@@ -94,6 +94,7 @@ public final class Habit {
         case .autoHealth:
             let reps = completion(on: date)?.reps ?? 0
             let goal = healthGoal ?? Double(max(targetReps, 1))
+            guard goal > 0 else { return reps > 0 ? 1.0 : 0.0 }
             return min(Double(reps) / goal, 1.0)
         case .inverse:
             return (completion(on: date)?.slipped ?? false) ? 0.0 : 1.0

@@ -8,6 +8,7 @@ struct InsightsView: View {
     @EnvironmentObject private var haptics: Haptics
     @State private var showRiskExpanded = false
     @State private var showCoachChat = false
+    @State private var cachedReport: Report?
 
     private let insightsEngine = InsightsEngine()
     private let riskEngine = RiskForecastEngine()
@@ -16,20 +17,22 @@ struct InsightsView: View {
     private let accent = DesignTokens.Accent.classicGreen
 
     var body: some View {
-        let habits = pages.flatMap { ($0.habits ?? []).filter { !$0.isArchived && !$0.isPaused } }
-        let insights = insightsEngine.generate(habits: habits)
-        let forecast = riskEngine.forecast(habits: habits)
-        let features = extractor.extract(habits: habits)
-        let consistency = stats.consistency(habits: habits, window: 30)
-        let streak = stats.currentStreak(habits: habits)
-        let best = stats.bestStreak(habits: habits)
-        let series = stats.consistencySeries(habits: habits, window: 30)
+        // The four engines each scan a 30-day window; recompute only when the
+        // underlying habit data changes, not on every sheet toggle / re-render.
+        let activeHabits = pages.flatMap { ($0.habits ?? []).filter { !$0.isArchived && !$0.isPaused } }
+        let sig = Self.signature(for: activeHabits)
+        let report = resolveReport(activeHabits, signature: sig)
 
-        let prevHalf = series.prefix(15).reduce(0, +) / max(1, Double(min(15, series.count)))
-        let recentHalf = series.suffix(15).reduce(0, +) / max(1, Double(min(15, series.count)))
-        let trend = recentHalf - prevHalf
+        let insights = report.insights
+        let forecast = report.forecast
+        let features = report.features
+        let consistency = report.consistency
+        let streak = report.streak
+        let best = report.best
+        let series = report.series
+        let trend = report.trend
 
-        ScrollView {
+        return ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 // Masthead
                 Text("Habit Map · No.18 · Insights")
@@ -182,6 +185,64 @@ struct InsightsView: View {
             CoachChatView(features: features)
                 .environmentObject(haptics)
         }
+        .task(id: sig) {
+            cachedReport = makeReport(habits: activeHabits, signature: sig)
+        }
+    }
+
+    // MARK: - Cached report
+
+    /// Snapshot of all engine outputs for one habit-data state.
+    private struct Report {
+        let signature: Int
+        let insights: [Insight]
+        let forecast: RiskForecast
+        let features: SlipFeatures
+        let consistency: Double
+        let streak: Int
+        let best: Int
+        let series: [Double]
+        let trend: Double
+    }
+
+    private func resolveReport(_ habits: [Habit], signature sig: Int) -> Report {
+        if let cached = cachedReport, cached.signature == sig { return cached }
+        return makeReport(habits: habits, signature: sig)
+    }
+
+    private func makeReport(habits: [Habit], signature sig: Int) -> Report {
+        let series = stats.consistencySeries(habits: habits, window: 30)
+        let denom = max(1, Double(min(15, series.count)))
+        let prevHalf = series.prefix(15).reduce(0, +) / denom
+        let recentHalf = series.suffix(15).reduce(0, +) / denom
+        return Report(
+            signature: sig,
+            insights: insightsEngine.generate(habits: habits),
+            forecast: riskEngine.forecast(habits: habits),
+            features: extractor.extract(habits: habits),
+            consistency: stats.consistency(habits: habits, window: 30),
+            streak: stats.currentStreak(habits: habits),
+            best: stats.bestStreak(habits: habits),
+            series: series,
+            trend: recentHalf - prevHalf
+        )
+    }
+
+    /// Cheap digest that changes whenever completion data (add/remove/edit) or the
+    /// day changes — used to invalidate the cached report.
+    private static func signature(for habits: [Habit]) -> Int {
+        var hasher = Hasher()
+        hasher.combine(Calendar.current.startOfDay(for: Date()))
+        for habit in habits {
+            hasher.combine(habit.id)
+            let comps = habit.completions ?? []
+            hasher.combine(comps.count)
+            for completion in comps {
+                hasher.combine(completion.reps)
+                hasher.combine(completion.slipped)
+            }
+        }
+        return hasher.finalize()
     }
 
     private func pageCard(page: HabitPage) -> some View {

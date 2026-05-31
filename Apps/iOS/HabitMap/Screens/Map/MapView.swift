@@ -13,7 +13,10 @@ struct MapView: View {
     private let stats = StatsService()
 
     var body: some View {
-        ScrollView {
+        // Resolve the filtered set once per body evaluation instead of 6× via the
+        // computed property (consistency text, 3 ledger stats, the heatmap).
+        let habits = filteredHabits
+        return ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 // Masthead
                 Text("Habit Map · No.07 · Atlas")
@@ -35,7 +38,7 @@ struct MapView: View {
                         Display("—heat", size: 28, color: accent, italic: true)
                     }
                     .padding(.top, 14)
-                    Text("Every habit, every day. \(Int(stats.consistency(habits: filteredHabits, window: 30) * 100))% consistency.")
+                    Text("Every habit, every day. \(Int(stats.consistency(habits: habits, window: 30) * 100))% consistency.")
                         .font(.custom(FontFamily.sans, size: 14))
                         .italic()
                         .foregroundColor(DesignTokens.Surface.mutedText)
@@ -64,7 +67,7 @@ struct MapView: View {
                 }
 
                 // 3-col ledger
-                ledgerCard
+                ledgerCard(habits: habits)
 
                 // Calendar atlas
                 VStack(alignment: .leading, spacing: 12) {
@@ -72,7 +75,7 @@ struct MapView: View {
                     GlassCard(cornerRadius: 18, padding: 16) {
                         ScrollView(.horizontal, showsIndicators: false) {
                             CalendarHeatmap(
-                                habits: filteredHabits,
+                                habits: habits,
                                 accent: accent,
                                 weeks: 36,
                                 cellSize: 8
@@ -130,12 +133,12 @@ struct MapView: View {
         }
     }
 
-    private var ledgerCard: some View {
+    private func ledgerCard(habits: [Habit]) -> some View {
         GlassCard(cornerRadius: 14, padding: 0) {
             HStack(spacing: 0) {
                 LedgerStat(
                     label: "30 Day",
-                    value: "\(Int(stats.consistency(habits: filteredHabits, window: 30) * 100))%",
+                    value: "\(Int(stats.consistency(habits: habits, window: 30) * 100))%",
                     accent: accent
                 )
                 Rectangle()
@@ -143,7 +146,7 @@ struct MapView: View {
                     .frame(width: 1, height: 44)
                 LedgerStat(
                     label: "Streak",
-                    value: "\(stats.currentStreak(habits: filteredHabits))D",
+                    value: "\(stats.currentStreak(habits: habits))D",
                     accent: DesignTokens.Semantic.warn,
                     showPip: true
                 )
@@ -152,7 +155,7 @@ struct MapView: View {
                     .frame(width: 1, height: 44)
                 LedgerStat(
                     label: "Best",
-                    value: "\(stats.bestStreak(habits: filteredHabits))D",
+                    value: "\(stats.bestStreak(habits: habits))D",
                     accent: DesignTokens.Surface.fg()
                 )
             }
