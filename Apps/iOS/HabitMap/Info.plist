@@ -28,6 +28,8 @@
 	<string>Habit Map reads workouts, steps, mindful minutes, sleep, and stand hours to auto-fill habits you've linked to Apple Health. We never store the raw values — only whether your goal was hit.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Not used. Habit Map is read-only for Apple Health.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Fonts/InstrumentSerif-Regular.ttf</string>

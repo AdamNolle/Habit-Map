@@ -25,11 +25,14 @@
 		38911B07206BFBAC2ECCA6EC /* SlipFeaturesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD78CEB593523EB8E3060894 /* SlipFeaturesTests.swift */; };
 		39450D2EEF7DE83C4F7C328D /* PageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05ADF44465ADB3148250823 /* PageContentView.swift */; };
 		3D0C82F39E6EA876084FEEEC /* HealthKitServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FC7CD6F121A9163A637181 /* HealthKitServiceTests.swift */; };
+		3D5180B605977B4349776A0D /* StepsActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F43BC918A92FF5F43BA12F2 /* StepsActivityTests.swift */; };
 		3EA3AECFA11EACC3613615D2 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407A727FE9DD2728BAF8EA77 /* InsightsView.swift */; };
 		432EB18366068EA0938FB510 /* MapNavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B1900B14C617C11A124A5D9 /* MapNavigationUITests.swift */; };
 		44F0701C703E2784411D0046 /* CellLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40059C50D931512CDE15EA5E /* CellLevelTests.swift */; };
+		4A22EB818720F8C17492655B /* StepsActivityViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8663B690410FF6B5B9F71C22 /* StepsActivityViewSnapshotTests.swift */; };
 		4ACD3DA2FCD2B63FD4A4334D /* RiskForecastThresholdTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68A072E5CB022ED221EFCD48 /* RiskForecastThresholdTests.swift */; };
 		4B5DEE2AD4E46127ABC6B012 /* EditPageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E2ADD1B46611B303866BC1 /* EditPageSheet.swift */; };
+		4F7F4FF70379A7F18FF35790 /* StepsLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AC9522850D499EF21E9461 /* StepsLiveActivity.swift */; };
 		52A337AB988DDABEAA639F1E /* PixelRingSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0590221A16B8D6CBE2BEF7A0 /* PixelRingSnapshotTests.swift */; };
 		52A713F8F246F34FAC6683A6 /* PixelFontSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECD91A1958D5E9519131442 /* PixelFontSnapshotTests.swift */; };
 		55B953AE47E29FC7AC0A2F5A /* AddHabitStep3View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0660D41AD316801E01AB09 /* AddHabitStep3View.swift */; };
@@ -101,6 +104,7 @@
 		E3C36D92821A7C62C3BA374B /* InsightsEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E1E50A89015CA141529F75 /* InsightsEngineTests.swift */; };
 		E411AF692C0136EEDDCC57E1 /* HabitMapCore in Frameworks */ = {isa = PBXBuildFile; productRef = C9E556CC412B440DF94EBF62 /* HabitMapCore */; };
 		E69EAAA3052D2EDD89A7F11A /* SlipFeatureExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B736078168F94BE547EB6879 /* SlipFeatureExtractorTests.swift */; };
+		E9145A3F848CCF337663510F /* LiveActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D71901DB866794FF3F2FDD64 /* LiveActivityController.swift */; };
 		ECC2F18D6D012A94598544F4 /* SparklineSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C874A28E57606E4FD4F504 /* SparklineSnapshotTests.swift */; };
 		F82555E731C9E9C11900E5EF /* AccentSwatchPickerSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 991577090BA44CC552EA9580 /* AccentSwatchPickerSnapshotTests.swift */; };
 		F934E0E95408BCCA8E7B63D2 /* HabitRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D1325189BA3E27ED7993C4 /* HabitRow.swift */; };
@@ -198,6 +202,7 @@
 		7CCBE0C6D656FA4D1DC4322C /* HabitMap.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HabitMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8215CC4A7FADBF823D95DBB8 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		83929D2082830E8608F7059A /* HabitMapCoreTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HabitMapCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8663B690410FF6B5B9F71C22 /* StepsActivityViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsActivityViewSnapshotTests.swift; sourceTree = "<group>"; };
 		8685CDF1D2F1A55A43E7886C /* NotificationCopyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCopyTests.swift; sourceTree = "<group>"; };
 		86D6611F2C2FBBABDBC50A5C /* HabitMapWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = HabitMapWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF659965FF6347D63DC9FD1 /* HeatmapComponentsSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatmapComponentsSnapshotTests.swift; sourceTree = "<group>"; };
@@ -212,6 +217,8 @@
 		984F8612C053BB35AAD1FC13 /* HapticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsTests.swift; sourceTree = "<group>"; };
 		991577090BA44CC552EA9580 /* AccentSwatchPickerSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentSwatchPickerSnapshotTests.swift; sourceTree = "<group>"; };
 		999CC62DB6FAC49F980F4C0E /* HabitMapWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitMapWidgetBundle.swift; sourceTree = "<group>"; };
+		99AC9522850D499EF21E9461 /* StepsLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsLiveActivity.swift; sourceTree = "<group>"; };
+		9F43BC918A92FF5F43BA12F2 /* StepsActivityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsActivityTests.swift; sourceTree = "<group>"; };
 		A3971B2DF635BC751B013184 /* HabitWizardUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitWizardUITests.swift; sourceTree = "<group>"; };
 		A693F224D8658BE4AD0629A3 /* HabitMapCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HabitMapCore; path = Packages/HabitMapCore; sourceTree = SOURCE_ROOT; };
 		A867F29048E443355C9FADF7 /* MiniIconSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniIconSnapshotTests.swift; sourceTree = "<group>"; };
@@ -236,6 +243,7 @@
 		D0D11175C3AB20D9D9E27EC3 /* AutoHealthWizardUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoHealthWizardUITests.swift; sourceTree = "<group>"; };
 		D4F8A14ADF8E1B1371264674 /* CoachSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachSection.swift; sourceTree = "<group>"; };
 		D5F0755338E934F3AFEE78FF /* PageCRUDUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageCRUDUITests.swift; sourceTree = "<group>"; };
+		D71901DB866794FF3F2FDD64 /* LiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityController.swift; sourceTree = "<group>"; };
 		DCA18B18028CE107F9D07F71 /* InsightCardSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCardSnapshotTests.swift; sourceTree = "<group>"; };
 		E6E303787AAF79F1E09F45C3 /* AboutSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSection.swift; sourceTree = "<group>"; };
 		E747DC1AAA9A4FBA666A5EB1 /* HabitRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRepositoryTests.swift; sourceTree = "<group>"; };
@@ -298,6 +306,7 @@
 				999CC62DB6FAC49F980F4C0E /* HabitMapWidgetBundle.swift */,
 				02D52B7F3CCA1B93A7998D1D /* HabitMapWidgets.entitlements */,
 				58CD4FCA7715688C1E08684A /* Info.plist */,
+				99AC9522850D499EF21E9461 /* StepsLiveActivity.swift */,
 				CC9541D2598A4F650579E710 /* TodayWidget.swift */,
 			);
 			path = HabitMapWidgets;
@@ -336,6 +345,7 @@
 				50BA83CF73C06FC537F34EBF /* Components */,
 				D96882A783657365E1EAC5B7 /* Resources */,
 				015ACAEF8ADE8FE7614C6611 /* Screens */,
+				E5A1C4A6CAD73E19610914D2 /* Services */,
 			);
 			path = HabitMap;
 			sourceTree = "<group>";
@@ -453,6 +463,14 @@
 			path = Pages;
 			sourceTree = "<group>";
 		};
+		E5A1C4A6CAD73E19610914D2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				D71901DB866794FF3F2FDD64 /* LiveActivityController.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		E5EA0B563978DBB991FA6DC5 /* HabitMapCoreTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -505,6 +523,8 @@
 				2CA0107E3B36CBECB1669552 /* SnapshotTestCase.swift */,
 				63C874A28E57606E4FD4F504 /* SparklineSnapshotTests.swift */,
 				3FDF9827267B85D69AD08CF8 /* StatsServiceTests.swift */,
+				9F43BC918A92FF5F43BA12F2 /* StepsActivityTests.swift */,
+				8663B690410FF6B5B9F71C22 /* StepsActivityViewSnapshotTests.swift */,
 				FB0D3EE85D903EA9F76970D0 /* StreakCardSnapshotTests.swift */,
 				0F89F47C8ABAAAFC97A7121E /* StringHelpersTests.swift */,
 				7AD11118F9D2E997E4830D76 /* UserSettingsSingletonTests.swift */,
@@ -772,6 +792,8 @@
 				18FC78D2AC4864D6A95DD6DE /* SnapshotTestCase.swift in Sources */,
 				ECC2F18D6D012A94598544F4 /* SparklineSnapshotTests.swift in Sources */,
 				D9026809F5CE2B714CBED446 /* StatsServiceTests.swift in Sources */,
+				3D5180B605977B4349776A0D /* StepsActivityTests.swift in Sources */,
+				4A22EB818720F8C17492655B /* StepsActivityViewSnapshotTests.swift in Sources */,
 				AA15591E4F833324D20B9366 /* StreakCardSnapshotTests.swift in Sources */,
 				BA4E92245C2EC52139543D6B /* StringHelpersTests.swift in Sources */,
 				016BEB2B21BBED5F4C54CF7C /* UserSettingsSingletonTests.swift in Sources */,
@@ -800,6 +822,7 @@
 				F934E0E95408BCCA8E7B63D2 /* HabitRow.swift in Sources */,
 				6542FB6D68F93C49CD535F51 /* HeaderView.swift in Sources */,
 				3EA3AECFA11EACC3613615D2 /* InsightsView.swift in Sources */,
+				E9145A3F848CCF337663510F /* LiveActivityController.swift in Sources */,
 				638B72EB6F15DC8C562A0025 /* MapView.swift in Sources */,
 				666D8F95B34FEF5F7F6EB69F /* MetricPickerView.swift in Sources */,
 				39450D2EEF7DE83C4F7C328D /* PageContentView.swift in Sources */,
@@ -816,6 +839,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6CE7CE1495FBFBFD196EC65B /* HabitMapWidgetBundle.swift in Sources */,
+				4F7F4FF70379A7F18FF35790 /* StepsLiveActivity.swift in Sources */,
 				D2C43DC10E72678C4A5583E0 /* TodayWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

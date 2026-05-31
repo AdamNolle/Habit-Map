@@ -46,6 +46,7 @@ targets:
         CFBundleDisplayName: Habit Map
         CFBundleShortVersionString: "0.9"
         CFBundleVersion: "9"
+        NSSupportsLiveActivities: true
         UILaunchScreen:
           UIColorName: AccentColor
         UISupportedInterfaceOrientations:
