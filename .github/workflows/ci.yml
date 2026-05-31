@@ -71,8 +71,8 @@ jobs:
       - name: Lint
         run: swiftlint lint --config .swiftlint.yml --reporter github-actions-logging
 
-  snapshot-ui-tests:
-    name: Snapshot + UI tests (non-blocking)
+  snapshot-tests:
+    name: Snapshot tests (non-blocking)
     runs-on: macos-15
     timeout-minutes: 60
     continue-on-error: true
@@ -97,17 +97,21 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      # Full suite incl. host-rendered snapshots + XCUITests. Pixel snapshots are
-      # recorded on a developer Mac and may differ on hosted runners, so this job
-      # is informational (continue-on-error) and never blocks the merge gate.
-      - name: Run full suite
+      # Package tests incl. host-rendered snapshots (HabitMapCoreTests). XCUITests
+      # are intentionally NOT run here: GitHub's hosted simulators are unreliable
+      # for SwiftUI UI automation + on-disk SwiftData (CoreData errno 2/30 — the
+      # very first CI run failed 5/7 UITests before any app changes). UI tests are
+      # the local pre-push gate instead (they pass 7/7 against the in-memory store).
+      # continue-on-error keeps even an occasional snapshot pixel diff non-gating.
+      - name: Run snapshot + package tests
         run: |
           set -o pipefail
           xcodebuild test \
             -project HabitMap.xcodeproj \
             -scheme HabitMap \
+            -only-testing:HabitMapCoreTests \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
-            -resultBundlePath TestResults-Full.xcresult \
+            -resultBundlePath TestResults-Snapshots.xcresult \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             | xcbeautify
 
@@ -115,6 +119,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: full-test-results
-          path: TestResults-Full.xcresult
+          name: snapshot-test-results
+          path: TestResults-Snapshots.xcresult
           if-no-files-found: ignore
