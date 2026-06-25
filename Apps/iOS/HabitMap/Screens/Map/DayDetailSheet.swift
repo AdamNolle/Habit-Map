@@ -5,6 +5,7 @@ import HabitMapCore
 struct DayDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var repo: HabitRepository
+    @EnvironmentObject private var haptics: Haptics
     let date: Date
     let habits: [Habit]
     let accent: Color
@@ -125,24 +126,18 @@ struct DayDetailSheet: View {
     }
 
     private func loadNote() {
-        for habit in habits {
-            if let n = habit.completion(on: date)?.note, !n.isEmpty {
-                note = n
-                return
-            }
-        }
-        note = ""
+        // Read from the exact same anchor that save() writes to, so the note round-trips.
+        note = scheduled.first?.completion(on: date)?.note ?? ""
     }
 
     private func save() {
         guard let anchor = scheduled.first else { dismiss(); return }
-        if let existing = anchor.completion(on: date) {
-            existing.note = note.isEmpty ? nil : note
-        } else {
-            let completion = HabitCompletion(date: date, reps: 0, note: note.isEmpty ? nil : note, habit: anchor)
-            repo.context.insert(completion)
+        do {
+            try repo.setNote(note.isEmpty ? nil : note, for: anchor, on: date)
+            dismiss()
+        } catch {
+            // Keep the sheet open so the user's note isn't silently discarded.
+            haptics.warn()
         }
-        try? repo.context.save()
-        dismiss()
     }
 }

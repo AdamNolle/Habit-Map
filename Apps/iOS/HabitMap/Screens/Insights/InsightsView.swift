@@ -21,7 +21,11 @@ struct InsightsView: View {
         // underlying habit data changes, not on every sheet toggle / re-render.
         let activeHabits = pages.flatMap { ($0.habits ?? []).filter { !$0.isArchived && !$0.isPaused } }
         let sig = Self.signature(for: activeHabits)
-        let report = resolveReport(activeHabits, signature: sig)
+        // Render straight from the cache; never call makeReport in body (that would double-compute
+        // and, if assigned to @State, warn about mutating state during view update). The async
+        // .task(id: sig) below computes the report exactly once per data change.
+        let report = (cachedReport?.signature == sig ? cachedReport : nil)
+            ?? Self.placeholderReport(signature: sig)
 
         let insights = report.insights
         let forecast = report.forecast
@@ -91,7 +95,7 @@ struct InsightsView: View {
                                     .foregroundColor(DesignTokens.Surface.dimText)
                             }
                         }
-                        PulseChart(data: series, accent: accent)
+                        PulseChart(data: series.compactMap { $0 }, accent: accent)
                             .frame(height: 100)
                     }
                 }
@@ -131,7 +135,7 @@ struct InsightsView: View {
                         SectionHeader("By page", action: "\(pages.count) pages")
                         VStack(spacing: 8) {
                             ForEach(pages) { page in
-                                pageCard(page: page)
+                                pageCard(page: page, stat: report.pageStats[page.persistentModelID])
                             }
                         }
                     }
@@ -201,20 +205,46 @@ struct InsightsView: View {
         let consistency: Double
         let streak: Int
         let best: Int
-        let series: [Double]
+        let series: [Double?]
         let trend: Double
+        let pageStats: [PersistentIdentifier: PageStat]
     }
 
-    private func resolveReport(_ habits: [Habit], signature sig: Int) -> Report {
-        if let cached = cachedReport, cached.signature == sig { return cached }
-        return makeReport(habits: habits, signature: sig)
+    /// Per-page stats, computed once inside `makeReport` so `pageCard` never recomputes per render.
+    private struct PageStat {
+        let pct: Int
+        let streak: Int
+        let series: [Double?]
+    }
+
+    /// Lightweight stand-in shown for a frame while `.task` computes the real report for the
+    /// current signature — keeps `makeReport` out of `body` (no double-compute, no state mutation
+    /// during view update).
+    private static func placeholderReport(signature sig: Int) -> Report {
+        Report(signature: sig, insights: [], forecast: .empty, features: .empty,
+               consistency: 0, streak: 0, best: 0, series: [], trend: 0, pageStats: [:])
     }
 
     private func makeReport(habits: [Habit], signature sig: Int) -> Report {
         let series = stats.consistencySeries(habits: habits, window: 30)
-        let denom = max(1, Double(min(15, series.count)))
-        let prevHalf = series.prefix(15).reduce(0, +) / denom
-        let recentHalf = series.suffix(15).reduce(0, +) / denom
+        // Trend compares the two halves of the window but SKIPS nil (pre-active / unscheduled) days
+        // instead of counting them as 0.0 misses, which would understate a young habit.
+        let prev = series.prefix(15).compactMap { $0 }
+        let recent = series.suffix(15).compactMap { $0 }
+        let prevHalf = prev.isEmpty ? 0 : prev.reduce(0, +) / Double(prev.count)
+        let recentHalf = recent.isEmpty ? 0 : recent.reduce(0, +) / Double(recent.count)
+
+        // Fold per-page stats into the cached report so pageCard reads them instead of recomputing.
+        var pageStats: [PersistentIdentifier: PageStat] = [:]
+        for page in pages {
+            let pageHabits = (page.habits ?? []).filter { !$0.isArchived && !$0.isPaused }
+            pageStats[page.persistentModelID] = PageStat(
+                pct: Int(stats.consistency(habits: pageHabits, window: 30) * 100),
+                streak: stats.currentStreak(habits: pageHabits),
+                series: stats.consistencySeries(habits: pageHabits, window: 30)
+            )
+        }
+
         return Report(
             signature: sig,
             insights: insightsEngine.generate(habits: habits),
@@ -224,7 +254,8 @@ struct InsightsView: View {
             streak: stats.currentStreak(habits: habits),
             best: stats.bestStreak(habits: habits),
             series: series,
-            trend: recentHalf - prevHalf
+            trend: recentHalf - prevHalf,
+            pageStats: pageStats
         )
     }
 
@@ -245,11 +276,11 @@ struct InsightsView: View {
         return hasher.finalize()
     }
 
-    private func pageCard(page: HabitPage) -> some View {
+    private func pageCard(page: HabitPage, stat: PageStat?) -> some View {
         let pageHabits = (page.habits ?? []).filter { !$0.isArchived && !$0.isPaused }
-        let pct = Int(stats.consistency(habits: pageHabits, window: 30) * 100)
-        let pStreak = stats.currentStreak(habits: pageHabits)
-        let pSeries = stats.consistencySeries(habits: pageHabits, window: 30)
+        let pct = stat?.pct ?? 0
+        let pStreak = stat?.streak ?? 0
+        let pSeries = stat?.series ?? []
 
         return GlassCard(cornerRadius: 0, padding: 0) {
             HStack(spacing: 12) {

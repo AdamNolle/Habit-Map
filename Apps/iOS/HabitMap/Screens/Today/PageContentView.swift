@@ -6,6 +6,8 @@ struct PageContentView: View {
     let page: HabitPage
     @Query(filter: #Predicate<HabitPage> { !$0.isArchived }) private var allPages: [HabitPage]
     @State private var showPagesManager = false
+    @State private var showCalmBanner = false
+    @State private var calmThreshold: Double = 0.55
     @EnvironmentObject private var repo: HabitRepository
     @EnvironmentObject private var haptics: Haptics
     private let stats = StatsService()
@@ -30,6 +32,7 @@ struct PageContentView: View {
                         onManage: { showPagesManager = true },
                         onDismiss: {
                             UserDefaults.standard.set(true, forKey: Self.dismissedKey(for: Date()))
+                            showCalmBanner = false
                         }
                     )
                     .padding(.horizontal, 20)
@@ -79,14 +82,37 @@ struct PageContentView: View {
                 .environmentObject(repo)
                 .environmentObject(haptics)
         }
+        .onAppear { evaluateCalmBanner() }
+        .onChange(of: calmSignature) { _, _ in evaluateCalmBanner() }
     }
 
-    private var showCalmBanner: Bool {
-        guard !UserDefaults.standard.bool(forKey: Self.dismissedKey(for: Date())) else { return false }
+    /// Cheap digest of the active-habit set + their completion counts. Re-running the
+    /// 30-day consistency scan + the `userSettings()` fetch only when this changes keeps
+    /// the calm-mode decision out of the per-render path (it ran on every `body` eval
+    /// before). The displayed result is unchanged — same inputs, same logic, cached.
+    private var calmSignature: Int {
+        var hasher = Hasher()
+        for page in allPages {
+            for habit in (page.habits ?? []) where !habit.isArchived && !habit.isPaused {
+                hasher.combine(habit.id)
+                hasher.combine((habit.completions ?? []).count)
+            }
+        }
+        return hasher.finalize()
+    }
+
+    private func evaluateCalmBanner() {
+        guard !UserDefaults.standard.bool(forKey: Self.dismissedKey(for: Date())) else {
+            showCalmBanner = false
+            return
+        }
         let activeHabits = allPages.flatMap { ($0.habits ?? []).filter { !$0.isArchived && !$0.isPaused } }
-        guard !activeHabits.isEmpty else { return false }
-        let threshold = (try? repo.userSettings())?.calmModeThreshold ?? 0.55
-        return stats.consistency(habits: activeHabits, window: 30) < threshold
+        guard !activeHabits.isEmpty else {
+            showCalmBanner = false
+            return
+        }
+        calmThreshold = (try? repo.userSettings())?.calmModeThreshold ?? 0.55
+        showCalmBanner = stats.consistency(habits: activeHabits, window: 30) < calmThreshold
     }
 
     private static func dismissedKey(for date: Date) -> String {

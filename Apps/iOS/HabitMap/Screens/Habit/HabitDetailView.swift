@@ -54,6 +54,32 @@ struct HabitDetailView: View {
                         }
                     }
 
+                    if habit.type == .autoHealth {
+                        fieldSection("Daily goal") {
+                            let increment = goalIncrement(for: habit.healthMetric)
+                            let unit = goalUnit(for: habit.healthMetric)
+                            let goalBinding = Binding<Double>(
+                                get: { habit.healthGoal ?? Double(habit.targetReps) },
+                                set: { habit.healthGoal = $0 }
+                            )
+                            HStack {
+                                Stepper("\(Int(goalBinding.wrappedValue))",
+                                        value: goalBinding,
+                                        in: increment...1_000_000,
+                                        step: increment)
+                                    .labelsHidden()
+                                Spacer()
+                                Text(unit.isEmpty
+                                     ? "\(Int(goalBinding.wrappedValue))"
+                                     : "\(Int(goalBinding.wrappedValue)) \(unit)")
+                                    .font(.custom(FontFamily.mono, size: 17))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(habit.accentColor)
+                            }
+                            .glassField()
+                        }
+                    }
+
                     VStack(spacing: 10) {
                         if habit.isArchived {
                             AppButton("Unarchive", style: .glass, accent: habit.accentColor) {
@@ -91,6 +117,24 @@ struct HabitDetailView: View {
             } message: {
                 Text("All completion history will be permanently removed.")
             }
+        }
+    }
+
+    /// Display unit for an auto-health metric's goal (reuses the wizard's metric table).
+    private func goalUnit(for metric: HealthMetric?) -> String {
+        guard let metric else { return "" }
+        return MetricPickerView.options.first(where: { $0.id == metric })?.unit ?? ""
+    }
+
+    /// Sensible Stepper increment per metric (mirrors the creation wizard).
+    private func goalIncrement(for metric: HealthMetric?) -> Double {
+        switch metric {
+        case .stepCount, .distanceWalkingRunning: return 500
+        case .activeEnergy:                       return 50
+        case .hydration:                          return 250
+        case .mindfulMinutes, .sleep, .standHours: return 5
+        case .workouts, .heartRate:               return 1
+        case nil:                                 return 1
         }
     }
 

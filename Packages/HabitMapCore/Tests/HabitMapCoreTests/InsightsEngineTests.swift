@@ -94,6 +94,23 @@ final class InsightsEngineTests: XCTestCase {
         XCTAssertTrue(insights.first!.body.contains("pause"))
     }
 
+    @MainActor
+    func test_idleHabits_skipsInverseHabit() {
+        // Inverse habit (avoid-a-bad-habit): going quiet = success, not idleness.
+        let h = Habit(name: "No Soda", emoji: "x", accentHex: "#FFFFFF",
+                      type: .inverse, targetReps: 1, weekdayMask: 0b01111111)
+        container.mainContext.insert(h)
+        let cal = Calendar.current
+        // Slips 8–15 days ago, none since — an idle stretch that for a normal habit
+        // would prompt "want to pause?", but here means the user has stayed clean.
+        for offset in 8..<16 {
+            let date = cal.startOfDay(for: cal.date(byAdding: .day, value: -offset, to: Date())!)
+            container.mainContext.insert(HabitCompletion(date: date, slipped: true, loggedAt: date, habit: h))
+        }
+        try? container.mainContext.save()
+        XCTAssertTrue(engine.idleHabits(habits: [h]).isEmpty)
+    }
+
     // MARK: - stackingSuggestions
 
     @MainActor

@@ -3,6 +3,7 @@ import SwiftData
 import HabitMapCore
 import BackgroundTasks
 import UserNotifications
+import WidgetKit
 
 @MainActor
 final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
@@ -22,16 +23,27 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
     }
 
     func reschedule() async {
-        let auth = await scheduler.authState()
+        guard let settings = try? repository.userSettings() else { return }
+        let activeHabits = ((try? repository.fetchPages()) ?? [])
+            .flatMap { ($0.habits ?? []) }
+            .filter { !$0.isArchived && !$0.isPaused }
+
+        var auth = await scheduler.authState()
+        // Bug #4: request authorization the first time a reminder is actually
+        // enabled — not only when the Setup tab happens to be opened. The
+        // `.undetermined` guard means we ask at most once.
+        if auth == .undetermined && remindersEnabled(settings: settings, habits: activeHabits) {
+            _ = try? await scheduler.requestAuthorization()
+            auth = await scheduler.authState()
+        }
         guard auth == .authorized else { return }
         await scheduler.cancelAll()
 
-        guard let settings = try? repository.userSettings() else { return }
-
         if let time = settings.dailyReminderTime {
             let comps = Calendar.current.dateComponents([.hour, .minute], from: time)
-            let pending = pendingCount()
-            let body = NotificationCopy.dailyReminderBody(tone: settings.notificationTone, pendingCount: pending)
+            // Bug #3: a repeating notification can't know the live count, so use
+            // generic copy rather than a stale baked-in number.
+            let body = NotificationCopy.dailyReminderBody(tone: settings.notificationTone)
             let title = NotificationCopy.dailyReminderTitle(tone: settings.notificationTone)
             try? await scheduler.schedule(ScheduledNotification(
                 identifier: "habitmap.daily-reminder",
@@ -51,13 +63,15 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
             ))
         }
 
-        let pages = (try? repository.fetchPages()) ?? []
-        for page in pages {
-            for habit in (page.habits ?? []) {
-                guard !habit.isArchived && !habit.isPaused else { continue }
-                await scheduleHabit(habit, settings: settings)
-            }
+        for habit in activeHabits {
+            await scheduleHabit(habit, settings: settings)
         }
+    }
+
+    private func remindersEnabled(settings: UserSettings, habits: [Habit]) -> Bool {
+        if settings.dailyReminderTime != nil { return true }
+        if settings.weeklyReflectionEnabled { return true }
+        return habits.contains { $0.reminderTime != nil }
     }
 
     func requestPermissionIfNeeded() async {
@@ -69,36 +83,34 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
     }
 
     func scheduleHabit(_ habit: Habit, settings: UserSettings? = nil) async {
+        // Always clear the habit's prior triggers (daily + every weekday variant)
+        // first, so a schedule change can't leave stale reminders behind (bug #1).
+        await cancelHabit(habit)
         let auth = await scheduler.authState()
         guard auth == .authorized else { return }
-        let id = Self.habitIdentifier(for: habit.id)
-        guard let reminder = habit.reminderTime, !habit.isArchived, !habit.isPaused else {
-            await scheduler.cancel(identifier: id)
-            return
-        }
+        guard habit.reminderTime != nil, !habit.isArchived, !habit.isPaused else { return }
         let resolvedSettings = settings ?? (try? repository.userSettings())
         let tone = resolvedSettings?.notificationTone ?? .gentle
-        let comps = Calendar.current.dateComponents([.hour, .minute], from: reminder)
-        let title = NotificationCopy.habitReminderTitle(tone: tone, habitName: habit.name)
-        let body = NotificationCopy.habitReminderBody(tone: tone, habitName: habit.name)
-        try? await scheduler.schedule(ScheduledNotification(
-            identifier: id, title: title, body: body,
-            hour: comps.hour ?? 9, minute: comps.minute ?? 0
-        ))
+        // Bug #1: a non-everyday habit gets one trigger per scheduled weekday so it
+        // no longer fires on rest days. The weekday set is derived in the core layer.
+        for notification in HabitReminderPlanner.notifications(for: habit, tone: tone) {
+            try? await scheduler.schedule(notification)
+        }
     }
 
     func cancelHabit(_ habit: Habit) async {
-        await scheduler.cancel(identifier: Self.habitIdentifier(for: habit.id))
+        for id in HabitNotificationID.allIdentifiers(for: habit.id) {
+            await scheduler.cancel(identifier: id)
+        }
     }
 
     private func handleHabitChange(habit: Habit, change: HabitChange) async {
-        switch change {
-        case .created, .updated:
-            await scheduleHabit(habit)
-        case .archived, .deleted:
-            await cancelHabit(habit)
-        }
+        // Bug #2: a single coherent reschedule per change. `reschedule()` already
+        // cancels and rebuilds every habit's triggers, so the previous extra
+        // per-habit schedule/cancel here did the work twice.
         await reschedule()
+        // Bug #6: a structural habit change alters what the Today widget shows.
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     public static func habitIdentifier(for id: UUID) -> String {
@@ -107,14 +119,6 @@ final class NotificationCoordinator: NSObject, ObservableObject, UNUserNotificat
 
     public static func parseHabitID(from identifier: String) -> UUID? {
         HabitNotificationID.parse(identifier)
-    }
-
-    private func pendingCount() -> Int {
-        let pages = (try? repository.fetchPages()) ?? []
-        return pages.flatMap { ($0.habits ?? []) }
-            .filter { !$0.isArchived && !$0.isPaused && $0.isScheduled(Date()) }
-            .filter { $0.progressFraction(on: Date()) < 1.0 }
-            .count
     }
 
     // MARK: - UNUserNotificationCenterDelegate
@@ -152,8 +156,6 @@ struct HabitMapApp: App {
     @StateObject private var sync: HealthSyncService
     @StateObject private var notifications: NotificationCoordinator
     @StateObject private var haptics: Haptics
-
-    private let healthRefreshIdentifier = "com.adam.habitmap.health-refresh"
 
     init() {
         do {
@@ -196,17 +198,29 @@ struct HabitMapApp: App {
                     } catch { }
                     await sync.syncToday()
                     await notifications.reschedule()
+                    // Bug #6: reflect any freshly-synced health data in the widget.
+                    WidgetCenter.shared.reloadAllTimelines()
+                    // Bug #5: bootstrap the first background-refresh request at launch;
+                    // BG tasks are one-shot, so the handler re-submits the next one.
+                    BackgroundRefresh.schedule()
                 }
         }
         .modelContainer(container)
-        .backgroundTask(.appRefresh(healthRefreshIdentifier)) {
+        .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
             await sync.syncToday()
-            await scheduleNextRefresh()
+            // Bug #5: an app-refresh task fires once — re-submit to keep the chain alive.
+            BackgroundRefresh.schedule()
         }
     }
+}
 
-    private func scheduleNextRefresh() async {
-        let request = BGAppRefreshTaskRequest(identifier: healthRefreshIdentifier)
+/// Owns the single background health-refresh request. iOS keeps one pending request
+/// per identifier, so re-submitting simply replaces it — that is the de-dup guard.
+enum BackgroundRefresh {
+    static let identifier = "com.adam.habitmap.health-refresh"
+
+    static func schedule() {
+        let request = BGAppRefreshTaskRequest(identifier: identifier)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
         try? BGTaskScheduler.shared.submit(request)
     }
@@ -257,8 +271,17 @@ struct RootView: View {
         .tint(DesignTokens.Accent.classicGreen)
         .preferredColorScheme(preferredScheme)
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
+            switch newPhase {
+            case .active:
                 Task { await sync.syncToday() }
+            case .background:
+                // Bug #6: the user may have logged habits this session — refresh the
+                // widget now (habit-completion writes don't go through onHabitChanged).
+                WidgetCenter.shared.reloadAllTimelines()
+                // Bug #5: ensure a background refresh is queued for the next window.
+                BackgroundRefresh.schedule()
+            default:
+                break
             }
         }
         .onChange(of: activeTab) { _, new in

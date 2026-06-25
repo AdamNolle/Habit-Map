@@ -131,6 +131,7 @@ struct CoachChatView: View {
                                      : DesignTokens.Accent.lilac)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Send")
             .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty || isThinking)
         }
         .padding(.horizontal, DesignTokens.Spacing.md)

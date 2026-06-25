@@ -138,6 +138,34 @@ public final class HabitRepository: ObservableObject {
         try context.save()
     }
 
+    // MARK: - Completions
+
+    /// Writes (or clears) the note on `habit`'s completion for `date`, creating the
+    /// completion if one doesn't exist yet, then persists. If the save throws, the
+    /// in-memory change is rolled back so callers never show a note that didn't save.
+    public func setNote(_ note: String?, for habit: Habit, on date: Date) throws {
+        let trimmed = (note?.isEmpty == true) ? nil : note
+        if let existing = habit.completion(on: date) {
+            let prior = existing.note
+            existing.note = trimmed
+            do {
+                try context.save()
+            } catch {
+                existing.note = prior
+                throw error
+            }
+        } else {
+            let completion = HabitCompletion(date: date, reps: 0, note: trimmed, habit: habit)
+            context.insert(completion)
+            do {
+                try context.save()
+            } catch {
+                context.delete(completion)
+                throw error
+            }
+        }
+    }
+
     // MARK: - Settings
 
     public func userSettings() throws -> UserSettings {

@@ -114,4 +114,39 @@ final class HabitRepositoryTests: XCTestCase {
         try repo.deleteHabit(habit)
         XCTAssertEqual((page.habits ?? []).count, 0)
     }
+
+    @MainActor
+    func test_setNote_createsCompletionWithNote() throws {
+        let page = try repo.createPage(name: "P", emoji: "🅿", accentHex: "#2BFF5F")
+        let habit = try repo.createHabit(name: "H", emoji: "💧", accentHex: "#3DA4FF",
+                                         type: .manualOnce, targetReps: 1,
+                                         weekdayMask: 0b01111111, on: page)
+        let date = Date()
+        try repo.setNote("felt great", for: habit, on: date)
+        XCTAssertEqual(habit.completion(on: date)?.note, "felt great")
+    }
+
+    @MainActor
+    func test_setNote_updatesExistingCompletion() throws {
+        let page = try repo.createPage(name: "P", emoji: "🅿", accentHex: "#2BFF5F")
+        let habit = try repo.createHabit(name: "H", emoji: "💧", accentHex: "#3DA4FF",
+                                         type: .manualOnce, targetReps: 1,
+                                         weekdayMask: 0b01111111, on: page)
+        let date = Date()
+        try repo.setNote("first", for: habit, on: date)
+        try repo.setNote("second", for: habit, on: date)
+        XCTAssertEqual(habit.completion(on: date)?.note, "second")
+    }
+
+    @MainActor
+    func test_setNote_emptyStringClearsNote() throws {
+        let page = try repo.createPage(name: "P", emoji: "🅿", accentHex: "#2BFF5F")
+        let habit = try repo.createHabit(name: "H", emoji: "💧", accentHex: "#3DA4FF",
+                                         type: .manualOnce, targetReps: 1,
+                                         weekdayMask: 0b01111111, on: page)
+        let date = Date()
+        try repo.setNote("note", for: habit, on: date)
+        try repo.setNote("", for: habit, on: date)
+        XCTAssertNil(habit.completion(on: date)?.note)
+    }
 }

@@ -36,7 +36,7 @@ struct TodayProvider: TimelineProvider {
         guard let container = try? PersistenceController.makeContainer(
             enableCloudKit: false,
             appGroupID: PersistenceController.appGroupID
-        ) else { return .placeholder }
+        ) else { return .empty }   // honest empty state, never fabricated stats
 
         let descriptor = FetchDescriptor<HabitPage>(predicate: #Predicate { !$0.isArchived })
         let pages = (try? container.mainContext.fetch(descriptor)) ?? []

@@ -10,12 +10,32 @@ struct MapView: View {
 
     @State private var selectedPageID: UUID?
     @State private var detailDate: Date?
+    @State private var cachedStats = CachedStats()
     private let stats = StatsService()
+
+    /// Snapshot of everything that's expensive to derive from the habit set: the three
+    /// streak/consistency scans (each up to ~730 days) and the precomputed 252-cell
+    /// (36-week) heatmap. Cached and only rebuilt when `signature` changes.
+    private struct CachedStats {
+        var signature: Int?
+        var consistency30: Double = 0
+        var currentStreak: Int = 0
+        var bestStreak: Int = 0
+        var heatmap: CalendarHeatmap?
+    }
 
     var body: some View {
         // Resolve the filtered set once per body evaluation instead of 6× via the
         // computed property (consistency text, 3 ledger stats, the heatmap).
         let habits = filteredHabits
+        // Previously the three streak/consistency scans AND the 252-cell heatmap were
+        // rebuilt on EVERY body eval — including the frequent ones from filter taps and
+        // sheet open/close. Resolve them from a signature-keyed cache; the heavy work
+        // only happens when the underlying data actually changes (see `.task` below).
+        let signature = Self.statsSignature(for: habits, pageID: selectedPageID)
+        let snapshot = cachedStats.signature == signature
+            ? cachedStats
+            : makeStats(for: habits, signature: signature)
         return ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 // Masthead
@@ -38,7 +58,7 @@ struct MapView: View {
                         Display("—heat", size: 28, color: accent, italic: true)
                     }
                     .padding(.top, 14)
-                    Text("Every habit, every day. \(Int(stats.consistency(habits: habits, window: 30) * 100))% consistency.")
+                    Text("Every habit, every day. \(Int(snapshot.consistency30 * 100))% consistency.")
                         .font(.custom(FontFamily.sans, size: 14))
                         .italic()
                         .foregroundColor(DesignTokens.Surface.mutedText)
@@ -67,20 +87,17 @@ struct MapView: View {
                 }
 
                 // 3-col ledger
-                ledgerCard(habits: habits)
+                ledgerCard(consistency30: snapshot.consistency30,
+                           currentStreak: snapshot.currentStreak,
+                           bestStreak: snapshot.bestStreak)
 
                 // Calendar atlas
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader("Calendar", action: "36 weeks")
                     GlassCard(cornerRadius: 18, padding: 16) {
                         ScrollView(.horizontal, showsIndicators: false) {
-                            CalendarHeatmap(
-                                habits: habits,
-                                accent: accent,
-                                weeks: 36,
-                                cellSize: 8
-                            ) { date in
-                                detailDate = date
+                            if let heatmap = snapshot.heatmap {
+                                heatmap
                             }
                         }
                     }
@@ -131,14 +148,68 @@ struct MapView: View {
                 .environmentObject(repo)
                 .environmentObject(haptics)
         }
+        .task(id: signature) {
+            // Warm the cache off the render path so the frequent incidental re-renders
+            // (sheet open/close, animations) hit the fast path above. The `body`
+            // fallback already computed the correct values this frame; this stores them.
+            if cachedStats.signature != signature {
+                cachedStats = makeStats(for: habits, signature: signature)
+            }
+        }
     }
 
-    private func ledgerCard(habits: [Habit]) -> some View {
+    /// Recompute the expensive snapshot for `habits`. Returns a value (never assigns
+    /// `@State`) so it's safe to call from `body` as a fallback when the cache is stale.
+    private func makeStats(for habits: [Habit], signature: Int) -> CachedStats {
+        CachedStats(
+            signature: signature,
+            consistency30: stats.consistency(habits: habits, window: 30),
+            currentStreak: stats.currentStreak(habits: habits),
+            bestStreak: stats.bestStreak(habits: habits),
+            heatmap: CalendarHeatmap(habits: habits, accent: accent, weeks: 36, cellSize: 8) { date in
+                detailDate = date
+            }
+        )
+    }
+
+    /// Digest that changes exactly when the displayed stats/heatmap would: the day
+    /// boundary, the selected scope, and each habit's schedule + completion data
+    /// (count/reps/slipped, folded order-independently to avoid false cache misses).
+    private static func statsSignature(for habits: [Habit], pageID: UUID?) -> Int {
+        var hasher = Hasher()
+        hasher.combine(Calendar.current.startOfDay(for: Date()))
+        hasher.combine(pageID)
+        for habit in habits {
+            hasher.combine(habit.id)
+            hasher.combine(habit.createdAt)
+            hasher.combine(habit.weekdayMask)
+            hasher.combine(habit.restDayMask)
+            hasher.combine(habit.typeRaw)
+            hasher.combine(habit.targetReps)
+            hasher.combine(habit.healthGoal)
+            let completions = habit.completions ?? []
+            var repsSum = 0
+            var slipCount = 0
+            var dayFold = 0
+            for completion in completions {
+                repsSum &+= completion.reps
+                if completion.slipped { slipCount += 1 }
+                dayFold ^= completion.date.hashValue
+            }
+            hasher.combine(completions.count)
+            hasher.combine(repsSum)
+            hasher.combine(slipCount)
+            hasher.combine(dayFold)
+        }
+        return hasher.finalize()
+    }
+
+    private func ledgerCard(consistency30: Double, currentStreak: Int, bestStreak: Int) -> some View {
         GlassCard(cornerRadius: 14, padding: 0) {
             HStack(spacing: 0) {
                 LedgerStat(
                     label: "30 Day",
-                    value: "\(Int(stats.consistency(habits: habits, window: 30) * 100))%",
+                    value: "\(Int(consistency30 * 100))%",
                     accent: accent
                 )
                 Rectangle()
@@ -146,7 +217,7 @@ struct MapView: View {
                     .frame(width: 1, height: 44)
                 LedgerStat(
                     label: "Streak",
-                    value: "\(stats.currentStreak(habits: habits))D",
+                    value: "\(currentStreak)D",
                     accent: DesignTokens.Semantic.warn,
                     showPip: true
                 )
@@ -155,7 +226,7 @@ struct MapView: View {
                     .frame(width: 1, height: 44)
                 LedgerStat(
                     label: "Best",
-                    value: "\(stats.bestStreak(habits: habits))D",
+                    value: "\(bestStreak)D",
                     accent: DesignTokens.Surface.fg()
                 )
             }

@@ -82,6 +82,23 @@ public final class Habit {
         return (weekdayMask & Int8(1 << weekday)) != 0 && !isRestDay(date)
     }
 
+    /// The earliest day this habit can count toward stats: the start-of-day of the
+    /// earlier of `createdAt` and the habit's earliest logged completion. Days before
+    /// this floor predate the habit and must not count as "scheduled but missed".
+    public var activeSince: Date {
+        let cal = Calendar.current
+        let creation = cal.startOfDay(for: createdAt)
+        guard let earliestCompletion = (completions ?? [])
+            .map({ cal.startOfDay(for: $0.date) })
+            .min() else { return creation }
+        return min(creation, earliestCompletion)
+    }
+
+    /// True when `date` is scheduled AND on/after the habit's `activeSince` floor.
+    public func isActive(on date: Date) -> Bool {
+        isScheduled(date) && Calendar.current.startOfDay(for: date) >= activeSince
+    }
+
     // MARK: - Progress
 
     public func progressFraction(on date: Date) -> Double {

@@ -143,17 +143,27 @@ public final class RuleBasedCoach: HabitCoachEngine {
         return CoachInsight(headline: headline, paragraph: paragraph, suggestion: nil)
     }
 
+    /// Weekdays eligible for best/worst comparison: those that actually had scheduled
+    /// attempts. A genuine 0%-completion weekday (attempts > 0, rate == 0) is exactly the
+    /// WORST day the coach should surface, so it must stay eligible — only weekdays with
+    /// no scheduled attempts are excluded.
+    private func eligibleWeekdays(_ f: SlipFeatures) -> [(Int, Double)] {
+        f.weekdayCompletion.enumerated().compactMap { idx, rate in
+            let hasData: Bool
+            if f.weekdayAttempts.indices.contains(idx) {
+                hasData = f.weekdayAttempts[idx] > 0
+            } else {
+                hasData = rate > 0   // legacy callers without attempt counts: best we can do
+            }
+            return hasData ? (idx, rate) : nil
+        }
+    }
+
     private func bestWeekday(_ f: SlipFeatures) -> (Int, Double)? {
-        let entries = f.weekdayCompletion.enumerated()
-            .filter { $0.element > 0 }
-            .map { ($0.offset, $0.element) }
-        return entries.max(by: { $0.1 < $1.1 })
+        eligibleWeekdays(f).max(by: { $0.1 < $1.1 })
     }
 
     private func worstWeekday(_ f: SlipFeatures) -> (Int, Double)? {
-        let entries = f.weekdayCompletion.enumerated()
-            .filter { $0.element > 0 }
-            .map { ($0.offset, $0.element) }
-        return entries.min(by: { $0.1 < $1.1 })
+        eligibleWeekdays(f).min(by: { $0.1 < $1.1 })
     }
 }

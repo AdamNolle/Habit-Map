@@ -37,7 +37,7 @@ final class WidgetStatsProviderTests: XCTestCase {
         XCTAssertEqual(snap.todayDone, 1)
         XCTAssertTrue(snap.todayComplete)
         XCTAssertEqual(snap.currentStreak, 1)
-        XCTAssertEqual(snap.consistencyPct, 3) // 1 of 30 scheduled days
+        XCTAssertEqual(snap.consistencyPct, 100) // brand-new habit completed every day it existed (1 of 1)
         XCTAssertEqual(snap.accentHex, "#2BFF5F")
     }
 
@@ -90,5 +90,18 @@ final class WidgetStatsProviderTests: XCTestCase {
         let data = try JSONEncoder().encode(WidgetSnapshot.placeholder)
         let decoded = try JSONDecoder().decode(WidgetSnapshot.self, from: data)
         XCTAssertEqual(decoded, WidgetSnapshot.placeholder)
+    }
+
+    /// The unavailable-store fallback must be neutral, not the fabricated gallery
+    /// `.placeholder` numbers (bug #7).
+    func test_emptySnapshot_isNeutral() {
+        let snap = WidgetSnapshot.empty
+        XCTAssertEqual(snap.consistencyPct, 0)
+        XCTAssertEqual(snap.currentStreak, 0)
+        XCTAssertEqual(snap.todayDone, 0)
+        XCTAssertEqual(snap.todayTotal, 0)
+        XCTAssertFalse(snap.todayComplete)
+        XCTAssertEqual(snap.todayFraction, 0)
+        XCTAssertNotEqual(snap, WidgetSnapshot.placeholder)
     }
 }

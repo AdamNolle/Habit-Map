@@ -3,25 +3,22 @@ import XCTest
 
 final class NotificationCopyTests: XCTestCase {
     func test_dailyReminder_gentleHasNoBannedPhrase() {
-        for n in [0, 1, 3, 10] {
-            let body = NotificationCopy.dailyReminderBody(tone: .gentle, pendingCount: n)
-            assertNoBannedPhrase(body)
+        assertNoBannedPhrase(NotificationCopy.dailyReminderBody(tone: .gentle))
+    }
+
+    func test_dailyReminder_bothTonesNonEmpty() {
+        XCTAssertFalse(NotificationCopy.dailyReminderBody(tone: .gentle).isEmpty)
+        XCTAssertFalse(NotificationCopy.dailyReminderBody(tone: .direct).isEmpty)
+    }
+
+    /// A repeating daily notification can't know the live remaining count, so the
+    /// copy must not bake a (stale) number into the body.
+    func test_dailyReminder_hasNoBakedCount() {
+        for tone in [NotificationTone.gentle, .direct] {
+            let body = NotificationCopy.dailyReminderBody(tone: tone)
+            XCTAssertFalse(body.contains(where: \.isNumber),
+                           "Daily reminder must not bake a stale count: \(body)")
         }
-    }
-
-    func test_dailyReminder_directIsTerse() {
-        let body = NotificationCopy.dailyReminderBody(tone: .direct, pendingCount: 3)
-        XCTAssertTrue(body.contains("3 habits"))
-    }
-
-    func test_dailyReminder_pluralizationOne() {
-        let body = NotificationCopy.dailyReminderBody(tone: .direct, pendingCount: 1)
-        XCTAssertTrue(body.contains("1 habit "))
-    }
-
-    func test_dailyReminder_pendingZero_gentleSaysOpen() {
-        let body = NotificationCopy.dailyReminderBody(tone: .gentle, pendingCount: 0)
-        XCTAssertTrue(body.contains("open"))
     }
 
     func test_weeklyReflection_gentleHasNoBannedPhrase() {

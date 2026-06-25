@@ -89,4 +89,25 @@ final class RuleBasedCoachTests: XCTestCase {
             }
         }
     }
+
+    // A weekday that was scheduled but completed 0% of the time is exactly the WORST
+    // day — it must be eligible. Before the fix the `> 0` filter dropped it, so the
+    // coach saw no asymmetry and fell through to the generic "Steady rhythm" copy.
+    func test_worstWeekday_includesGenuineZeroPercentDay() async throws {
+        var completion = Array(repeating: 0.9, count: 7)
+        completion[4] = 0.0 // Friday: scheduled but never completed
+        let f = SlipFeatures(
+            windowDays: 30, totalScheduled: 28, totalCompleted: 24,
+            consistencyPct: 0.85,
+            perHabit: [], weekdayCompletion: completion,
+            weekdayAttempts: Array(repeating: 4, count: 7), // every weekday had attempts
+            topSlipWindows: [], idleHabits: [], strongPairs: [],
+            recoveryDaysAverage: 0, streakBreakSignals: []
+        )
+        let insight = try await coach.coach(features: f)
+        XCTAssertNotEqual(insight.headline, "Steady rhythm",
+                          "0% Friday should drive a weekday-strength insight, not fall through")
+        XCTAssertTrue(insight.paragraph.contains("Fridays come in at 0%"),
+                      "Worst (0%) day not surfaced: \(insight.paragraph)")
+    }
 }

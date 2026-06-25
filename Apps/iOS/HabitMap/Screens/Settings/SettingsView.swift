@@ -43,7 +43,7 @@ struct SettingsView: View {
         }
         .background(DesignTokens.Surface.bg)
         .task { settings = try? repo.userSettings() }
-        .sheet(isPresented: $showPages) { PagesManagerView().environmentObject(repo) }
+        .sheet(isPresented: $showPages) { PagesManagerView().environmentObject(repo).environmentObject(haptics) }
         .alert("Reset what?",
                isPresented: Binding(get: { resetStep == .scope }, set: { if !$0 { resetStep = .idle } })) {
             Button("Everything", role: .destructive) { resetScope = .everything; resetStep = .confirm }
@@ -174,7 +174,7 @@ struct SettingsView: View {
             if !pages.isEmpty {
                 Picker("", selection: Binding(
                     get: { settings.defaultPageId ?? pages.first?.id },
-                    set: { settings.defaultPageId = $0 }
+                    set: { settings.defaultPageId = $0; try? repo.context.save() }
                 )) {
                     ForEach(pages) { Text($0.name.titleCased).tag($0.id as UUID?) }
                 }
@@ -272,16 +272,6 @@ struct SettingsView: View {
                 get: { settings.hapticsEnabled },
                 set: { settings.hapticsEnabled = $0; haptics.isEnabled = $0; try? repo.context.save() }
             )
-        )
-        settingsToggleRow(
-            icon: MiniIcon("heart.fill", color: DesignTokens.Semantic.delight),
-            title: "Apple Health",
-            isOn: .constant(true)
-        )
-        settingsToggleRow(
-            icon: MiniIcon("cloud.fill", color: DesignTokens.Semantic.info),
-            title: "iCloud sync",
-            isOn: Binding(get: { settings.iCloudSyncEnabled }, set: { settings.iCloudSyncEnabled = $0 })
         )
         settingsToggleRow(
             isLast: true,
@@ -388,7 +378,7 @@ struct SettingsView: View {
     private func performReset() {
         haptics.failure()
         try? repo.deleteAll(scope: resetScope == .everything ? .everything : .archivedOnly)
-        if resetScope == .everything { settings = nil }
+        if resetScope == .everything { settings = try? repo.userSettings() }
     }
 
     enum ResetStep { case idle, scope, confirm }

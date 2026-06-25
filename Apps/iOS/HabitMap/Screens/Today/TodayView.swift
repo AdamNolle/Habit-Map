@@ -51,7 +51,15 @@ struct TodayView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .onAppear {
-                    if selectedPageID == nil { selectedPageID = activePages.first?.id }
+                    // First appearance only (guarded by nil) — not a per-render fetch.
+                    if selectedPageID == nil {
+                        let defaultID = (try? repo.userSettings())?.defaultPageId
+                        if let defaultID, activePages.contains(where: { $0.id == defaultID }) {
+                            selectedPageID = defaultID
+                        } else {
+                            selectedPageID = activePages.first?.id
+                        }
+                    }
                 }
                 .onChange(of: pages) { _, newPages in
                     let active = newPages.filter { !$0.isArchived }

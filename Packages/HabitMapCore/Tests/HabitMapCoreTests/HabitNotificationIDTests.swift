@@ -20,6 +20,27 @@ final class HabitNotificationIDTests: XCTestCase {
         XCTAssertNil(HabitNotificationID.parse("habitmap.habit.not-a-uuid"))
     }
 
+    func test_weekdayIdentifier_parsesBackToHabitID() {
+        let id = UUID()
+        let wdID = HabitNotificationID.identifier(for: id, weekday: 4)
+        XCTAssertEqual(wdID, "habitmap.habit.\(id.uuidString).wd4")
+        // A per-weekday identifier still routes a tap to the right habit.
+        XCTAssertEqual(HabitNotificationID.parse(wdID), id)
+    }
+
+    func test_allIdentifiers_coverBaseAndEveryWeekday() {
+        let id = UUID()
+        let all = HabitNotificationID.allIdentifiers(for: id)
+        XCTAssertEqual(all.count, 8) // base + 7 weekdays
+        XCTAssertTrue(all.contains(HabitNotificationID.identifier(for: id)))
+        for wd in 1...7 {
+            XCTAssertTrue(all.contains(HabitNotificationID.identifier(for: id, weekday: wd)))
+        }
+        for identifier in all {
+            XCTAssertEqual(HabitNotificationID.parse(identifier), id)
+        }
+    }
+
     @MainActor
     func test_pageID_findsPageContainingHabit() throws {
         let container = try ModelContainer(

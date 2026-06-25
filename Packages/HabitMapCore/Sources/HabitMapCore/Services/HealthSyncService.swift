@@ -29,6 +29,10 @@ public final class HealthSyncService: ObservableObject {
 
     public func syncHabit(_ habit: Habit) async {
         guard let metric = habit.healthMetric else { return }
+        // Gate BEFORE querying: HealthKit read queries silently return 0/empty when
+        // access is denied/undetermined (they do NOT throw), so without this guard an
+        // unauthorized sync would clobber real completions with reps=0.
+        guard await provider.authState(for: [metric]) == .authorized else { return }
         do {
             let value = try await provider.todayTotal(for: metric, on: Date())
             upsertCompletion(habit: habit, value: value)
@@ -37,15 +41,23 @@ public final class HealthSyncService: ObservableObject {
         }
     }
 
+    /// Non-destructive upsert: never lowers a value and never overwrites a
+    /// non-`.health` completion, so manual/watch/siri provenance and streaks survive
+    /// a transient empty read or a revoked-permission read.
     private func upsertCompletion(habit: Habit, value: Double) {
         let today = Date.startOfToday()
-        let reps = Int(value)
+        let newReps = Int(value)
         if let existing = habit.completion(on: today) {
-            existing.reps = reps
+            // Preserve provenance: only health-sourced completions may be touched.
+            guard existing.source == .health else { return }
+            // Monotonic: only raise reps; never lower on a transient smaller read.
+            guard newReps > existing.reps else { return }
+            existing.reps = newReps
             existing.loggedAt = Date()
-            existing.sourceRaw = CompletionSource.health.rawValue
         } else {
-            let completion = HabitCompletion(date: today, reps: reps, source: .health, habit: habit)
+            // Nothing to record for a zero read.
+            guard newReps > 0 else { return }
+            let completion = HabitCompletion(date: today, reps: newReps, source: .health, habit: habit)
             repository.context.insert(completion)
         }
         try? repository.context.save()

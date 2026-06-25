@@ -16,17 +16,16 @@ public enum NotificationCopy {
         }
     }
 
-    public static func dailyReminderBody(tone: NotificationTone, pendingCount: Int) -> String {
+    /// A daily reminder is a *repeating* notification scheduled once: it can't know
+    /// the live remaining count at fire time, so the copy stays generic and truthful
+    /// rather than baking a number that freezes and is wrong every later day.
+    public static func dailyReminderBody(tone: NotificationTone) -> String {
         let body: String
         switch tone {
         case .gentle:
-            if pendingCount == 0 {
-                body = "Today is open — log when you're ready."
-            } else {
-                body = "\(pendingCount) habit\(pendingCount == 1 ? "" : "s") waiting whenever you're ready."
-            }
+            body = "Your habits are waiting whenever you're ready."
         case .direct:
-            body = "\(pendingCount) habit\(pendingCount == 1 ? "" : "s") remaining today."
+            body = "Time to check in on today's habits."
         }
         assertSafe(body, tone: tone)
         return body

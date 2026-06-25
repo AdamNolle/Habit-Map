@@ -22,11 +22,26 @@ public struct MasterHeatmapCard: View {
         let today = cal.startOfDay(for: Date())
         let now = Date()
         let active = (page.habits ?? []).filter { !$0.isArchived && !$0.isPaused }
+
+        // Build a per-habit completion lookup ONCE (keyed by start-of-day) so each of
+        // the `days` cells resolves a completion in O(1) instead of re-scanning every
+        // habit's completion list. Keeps the FIRST completion per day to match
+        // `Habit.completion(on:)`'s `.first` semantics, so CellLevel output is identical.
+        var lookup: [UUID: [Date: HabitCompletion]] = [:]
+        for habit in active {
+            var byDay: [Date: HabitCompletion] = [:]
+            for completion in (habit.completions ?? []) {
+                let day = cal.startOfDay(for: completion.date)
+                if byDay[day] == nil { byDay[day] = completion }
+            }
+            lookup[habit.id] = byDay
+        }
+
         self.cells = (0..<days).map { offset in
             let dayOffset = days - 1 - offset
             let date = cal.date(byAdding: .day, value: -dayOffset, to: today) ?? today
             return Cell(id: offset,
-                        level: Self.combinedLevel(on: date, active: active, now: now, cal: cal),
+                        level: Self.combinedLevel(on: date, active: active, lookup: lookup, now: now, cal: cal),
                         isToday: cal.isDate(date, inSameDayAs: today))
         }
     }
@@ -69,12 +84,39 @@ public struct MasterHeatmapCard: View {
         }
     }
 
-    private static func combinedLevel(on date: Date, active: [Habit], now: Date, cal: Calendar) -> CellLevel {
+    private static func combinedLevel(on date: Date,
+                                      active: [Habit],
+                                      lookup: [UUID: [Date: HabitCompletion]],
+                                      now: Date,
+                                      cal: Calendar) -> CellLevel {
         guard !active.isEmpty else { return .empty }
         if date > now { return .future }
         let scheduled = active.filter { $0.isScheduled(date) }
         guard !scheduled.isEmpty else { return .rest }
-        let avg = scheduled.map { $0.progressFraction(on: date) }.reduce(0, +) / Double(scheduled.count)
+        let day = cal.startOfDay(for: date)
+        let avg = scheduled
+            .map { progressFraction(for: $0, completion: lookup[$0.id]?[day]) }
+            .reduce(0, +) / Double(scheduled.count)
         return CellLevel.from(progress: avg)
+    }
+
+    /// Mirrors `Habit.progressFraction(on:)` but reads a precomputed completion instead
+    /// of re-scanning the habit's completion list. Must stay byte-identical to that
+    /// method so the rendered CellLevel (and snapshots) are unchanged.
+    private static func progressFraction(for habit: Habit, completion: HabitCompletion?) -> Double {
+        switch habit.type {
+        case .manualOnce:
+            return (completion?.reps ?? 0) >= 1 ? 1.0 : 0.0
+        case .manualMultiple:
+            let reps = completion?.reps ?? 0
+            return min(Double(reps) / Double(max(habit.targetReps, 1)), 1.0)
+        case .autoHealth:
+            let reps = completion?.reps ?? 0
+            let goal = habit.healthGoal ?? Double(max(habit.targetReps, 1))
+            guard goal > 0 else { return reps > 0 ? 1.0 : 0.0 }
+            return min(Double(reps) / goal, 1.0)
+        case .inverse:
+            return (completion?.slipped ?? false) ? 0.0 : 1.0
+        }
     }
 }

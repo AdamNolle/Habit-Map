@@ -5,10 +5,10 @@ import HabitMapCore
 
 struct HabitRow: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
     @EnvironmentObject private var repo: HabitRepository
     @EnvironmentObject private var sync: HealthSyncService
     @EnvironmentObject private var haptics: Haptics
-    @Query private var allSettings: [UserSettings]
     @Bindable var habit: Habit
     let index: Int
     @State private var showDetail = false
@@ -121,7 +121,8 @@ struct HabitRow: View {
         case .autoHealth:
             switch healthAuth {
             case .unavailable: return "Unavailable"
-            case .undetermined, .denied: return "Authorize"
+            case .undetermined: return "Authorize"
+            case .denied(let n): return n < 2 ? "Authorize" : "Settings"
             case .authorized:
                 let reps = habit.completion(on: Date())?.reps ?? 0
                 let goal = Int(habit.healthGoal ?? Double(habit.targetReps))
@@ -154,40 +155,68 @@ struct HabitRow: View {
         let existing = habit.completion(on: today)
         let wasComplete = isDone
 
+        // Snapshot for revert if the save fails (don't persist a lie).
+        let priorReps = existing?.reps
+        let priorSlipped = existing?.slipped
+        let priorLoggedAt = existing?.loggedAt
+        var inserted: HabitCompletion?
+        let onSuccess: () -> Void
+
         switch habit.type {
         case .manualOnce:
             if let existing {
                 existing.reps = existing.reps >= 1 ? 0 : 1
                 existing.loggedAt = Date()
             } else {
-                modelContext.insert(HabitCompletion(date: today, reps: 1, habit: habit))
+                let c = HabitCompletion(date: today, reps: 1, habit: habit)
+                modelContext.insert(c)
+                inserted = c
             }
-            if wasComplete { haptics.habitUncomplete() } else { haptics.habitComplete() }
+            onSuccess = { if wasComplete { haptics.habitUncomplete() } else { haptics.habitComplete() } }
 
         case .manualMultiple:
+            let newReps: Int
             if let existing {
-                let newReps = existing.reps >= habit.targetReps ? 0 : existing.reps + 1
-                haptics.multiStep(step: newReps, of: habit.targetReps)
+                newReps = existing.reps >= habit.targetReps ? 0 : existing.reps + 1
                 existing.reps = newReps
                 existing.loggedAt = Date()
             } else {
-                haptics.multiStep(step: 1, of: habit.targetReps)
-                modelContext.insert(HabitCompletion(date: today, reps: 1, habit: habit))
+                newReps = 1
+                let c = HabitCompletion(date: today, reps: 1, habit: habit)
+                modelContext.insert(c)
+                inserted = c
             }
+            onSuccess = { haptics.multiStep(step: newReps, of: habit.targetReps) }
 
         case .inverse:
             if let existing {
                 existing.slipped.toggle()
                 existing.loggedAt = Date()
             } else {
-                modelContext.insert(HabitCompletion(date: today, slipped: true, habit: habit))
+                let c = HabitCompletion(date: today, slipped: true, habit: habit)
+                modelContext.insert(c)
+                inserted = c
             }
-            if wasComplete { haptics.habitUncomplete() } else { haptics.habitComplete() }
+            onSuccess = { if wasComplete { haptics.habitUncomplete() } else { haptics.habitComplete() } }
 
         case .autoHealth:
             return
         }
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+            onSuccess()
+        } catch {
+            // Revert the optimistic mutation so the UI doesn't show an unsaved change.
+            if let inserted {
+                modelContext.delete(inserted)
+            } else if let existing {
+                if let priorReps { existing.reps = priorReps }
+                if let priorSlipped { existing.slipped = priorSlipped }
+                if let priorLoggedAt { existing.loggedAt = priorLoggedAt }
+            }
+            haptics.warn()
+        }
     }
 
     private func handleAutoHealthTap() {
@@ -210,9 +239,12 @@ struct HabitRow: View {
                 } catch { healthAuth = .denied(timesDenied: n + 1) }
             }
         case .denied:
-            habit.type = .manualOnce
-            habit.healthMetric = nil
-            try? modelContext.save()
+            // Authorization is exhausted (denied twice). iOS won't re-prompt, so
+            // deep-link to system Settings where the user can re-grant access.
+            // Do NOT silently rewrite the habit's type/metric.
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                openURL(url)
+            }
         case .authorized:
             Task { await sync.syncHabit(habit) }
         case .unavailable:

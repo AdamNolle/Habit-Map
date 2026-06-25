@@ -39,6 +39,7 @@ public final class SlipFeatureExtractor {
             }
         }
         let weekdayCompletion = weekday.map { $0.total > 0 ? Double($0.done) / Double($0.total) : 0 }
+        let weekdayAttempts = weekday.map { $0.total }   // distinguishes "0% completed" from "no data"
 
         // Per-habit features
         let perHabit: [HabitFeatures] = activeHabits.map { habit in
@@ -152,6 +153,7 @@ public final class SlipFeatureExtractor {
             consistencyPct: consistency,
             perHabit: perHabit,
             weekdayCompletion: weekdayCompletion,
+            weekdayAttempts: weekdayAttempts,
             topSlipWindows: Array(topSlipWindows),
             idleHabits: idleNames,
             strongPairs: pairs,

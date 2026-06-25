@@ -72,13 +72,13 @@ struct PagesManagerView: View {
                                         set: { if !$0 { deletingPage = nil } }),
                    presenting: deletingPage) { page in
                 let habits = (page.habits ?? []).count
+                let other = activePages.first { $0.id != page.id }
                 if habits > 0 {
-                    Button("Delete & migrate", role: .destructive) {
-                        let other = activePages.first { $0.id != page.id }
-                        if let other {
+                    if let other {
+                        Button("Delete & migrate", role: .destructive) {
                             try? repo.deletePage(page, migrateTo: other)
+                            deletingPage = nil
                         }
-                        deletingPage = nil
                     }
                     Button("Archive instead") {
                         try? repo.archivePage(page)
@@ -94,8 +94,13 @@ struct PagesManagerView: View {
                 }
             } message: { page in
                 let n = (page.habits ?? []).count
+                let hasOther = activePages.contains { $0.id != page.id }
                 if n > 0 {
-                    Text("This page has \(n) habit\(n == 1 ? "" : "s"). Migrate them to another page or archive this page instead.")
+                    if hasOther {
+                        Text("This page has \(n) habit\(n == 1 ? "" : "s"). Migrate them to another page or archive this page instead.")
+                    } else {
+                        Text("This page has \(n) habit\(n == 1 ? "" : "s") and is your only active page. Archive it to keep them.")
+                    }
                 } else {
                     Text("This action is permanent.")
                 }

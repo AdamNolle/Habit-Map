@@ -30,9 +30,23 @@ final class InsightsEngineTimeOfDayTests: XCTestCase {
     private var mondays: [Date] { [date(2024, 1, 8), date(2024, 1, 15), date(2024, 1, 22), date(2024, 1, 29)] }
 
     @MainActor
-    private func mondayHabit() -> Habit {
+    private func mondayHabit(reminderHour: Int? = 19) -> Habit {
         let h = Habit(name: "RUN", emoji: "🏃", accentHex: "#2BFF5F",
                       type: .manualOnce, targetReps: 1, weekdayMask: 0b0000001) // Monday only
+        if let hr = reminderHour {
+            // The user *intends* to do it in the evening (bucket 4) — skips should
+            // attribute here, not to the "overnight" sentinel.
+            h.reminderTime = Calendar.current.date(bySettingHour: hr, minute: 0, second: 0, of: asOf)
+        }
+        container.mainContext.insert(h)
+        try? container.mainContext.save()
+        return h
+    }
+
+    @MainActor
+    private func dailyHabit() -> Habit {
+        let h = Habit(name: "RUN", emoji: "🏃", accentHex: "#2BFF5F",
+                      type: .manualOnce, targetReps: 1, weekdayMask: 0b1111111) // every day
         container.mainContext.insert(h)
         try? container.mainContext.save()
         return h
@@ -46,12 +60,43 @@ final class InsightsEngineTimeOfDayTests: XCTestCase {
     }
 
     @MainActor
-    func test_timeOfDaySkipRisk_emitsWhenDayAlwaysSkipped() {
-        let h = mondayHabit() // never completed → every Monday is a skip
+    func test_timeOfDaySkipRisk_attributesSkipToReminderBucketNotOvernight() {
+        let h = mondayHabit() // evening reminder, never completed → every Monday is a skip
         let insights = engine.timeOfDaySkipRisk(habits: [h], asOf: asOf)
         XCTAssertEqual(insights.count, 1)
         XCTAssertEqual(insights.first?.kind, .risk)
         XCTAssertEqual(insights.first?.title, "SLIP WINDOW")
+        let body = insights.first?.body ?? ""
+        // Skipped Mondays attribute to the *reminder* (evening) bucket, not overnight.
+        XCTAssertTrue(body.contains("Mondays around evenings"), "Got: \(body)")
+        XCTAssertFalse(body.contains("overnight"), "Skips must not funnel to overnight: \(body)")
+    }
+
+    @MainActor
+    func test_timeOfDaySkipRisk_noReminderNoHistory_emitsNothing() {
+        // No reminder and no completion history → no signal for when the habit belongs,
+        // so we refuse to fabricate an (overnight) slip window.
+        let h = mondayHabit(reminderHour: nil)
+        XCTAssertTrue(engine.timeOfDaySkipRisk(habits: [h], asOf: asOf).isEmpty)
+    }
+
+    @MainActor
+    func test_timeOfDaySkipRisk_attributesSkipsToModalCompletionBucket() {
+        // No reminder, but the habit is normally completed in the evening. Fridays are
+        // skipped → the skip should land in the modal (evening) bucket on Fridays.
+        let cal = Calendar.current
+        let h = dailyHabit()
+        for offset in 1..<30 {
+            guard let day = cal.date(byAdding: .day, value: -offset, to: cal.startOfDay(for: asOf)) else { continue }
+            if cal.component(.weekday, from: day) != 6 { // not Friday
+                complete(h, on: day, hour: 19) // evening
+            }
+        }
+        let insights = engine.timeOfDaySkipRisk(habits: [h], asOf: asOf)
+        XCTAssertEqual(insights.count, 1)
+        let body = insights.first?.body ?? ""
+        XCTAssertTrue(body.contains("Fridays around evenings"), "Got: \(body)")
+        XCTAssertFalse(body.contains("overnight"), "Got: \(body)")
     }
 
     @MainActor

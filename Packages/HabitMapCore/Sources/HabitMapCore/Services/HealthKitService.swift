@@ -12,12 +12,30 @@ public final class HealthKitService: HealthKitProviding, @unchecked Sendable {
 
     public func authState(for metrics: Set<HealthMetric>) async -> HealthAuthState {
         guard let store else { return .unavailable }
-        let types = metrics.compactMap(Self.objectType(for:))
-        guard !types.isEmpty else { return .undetermined }
-        let statuses = types.map { store.authorizationStatus(for: $0) }
-        if statuses.allSatisfy({ $0 == .sharingAuthorized }) { return .authorized }
-        if statuses.contains(.sharingDenied) { return .denied(timesDenied: 1) }
-        return .undetermined
+        let types = Set(metrics.compactMap(Self.objectType(for:)))
+        // Need at least one type we can both register and probe to infer state.
+        guard !types.isEmpty,
+              let probeMetric = metrics.first(where: { Self.objectType(for: $0) != nil })
+        else { return .undetermined }
+
+        // `authorizationStatus(for:)` only reveals SHARE/write grants and never read
+        // grants (Apple hides them for privacy). For our read-only types it stays
+        // `.notDetermined` forever, so we instead ask whether the system still needs
+        // to prompt, then confirm readability with a lightweight probe read.
+        switch await requestStatus(for: types, on: store) {
+        case .shouldRequest:
+            // System would still show the permission sheet ⇒ never asked / undetermined.
+            return .undetermined
+        case .unnecessary:
+            // The user already made a decision; a successful probe read (incl. a 0
+            // total) confirms the data is readable ⇒ authorized; a HealthKit error
+            // means the type isn't readable ⇒ treat as denied.
+            return await canProbeRead(probeMetric) ? .authorized : .denied(timesDenied: 1)
+        case .unknown:
+            return .undetermined
+        @unknown default:
+            return .undetermined
+        }
     }
 
     @discardableResult
@@ -30,6 +48,31 @@ public final class HealthKitService: HealthKitProviding, @unchecked Sendable {
             return await authState(for: metrics)
         } catch {
             throw HealthKitError.authorizationFailed(underlying: error)
+        }
+    }
+
+    // MARK: - Authorization probes
+
+    /// Whether HealthKit still needs to present the permission sheet for `types`.
+    /// `.shouldRequest` means at least one type is still undetermined; `.unnecessary`
+    /// means the user already decided (granted or denied) for every type.
+    private func requestStatus(for types: Set<HKObjectType>,
+                               on store: HKHealthStore) async -> HKAuthorizationRequestStatus {
+        await withCheckedContinuation { continuation in
+            store.getRequestStatusForAuthorization(toShare: [], read: types) { status, _ in
+                continuation.resume(returning: status)
+            }
+        }
+    }
+
+    /// Attempts a representative read for `metric`. A non-error result (including a 0
+    /// total) means the type is readable; a thrown HealthKit error means it is not.
+    private func canProbeRead(_ metric: HealthMetric) async -> Bool {
+        do {
+            _ = try await todayTotal(for: metric, on: Date())
+            return true
+        } catch {
+            return false
         }
     }
 

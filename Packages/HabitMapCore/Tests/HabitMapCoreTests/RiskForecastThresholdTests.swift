@@ -39,13 +39,18 @@ final class RiskForecastThresholdTests: XCTestCase {
     @MainActor
     func test_alwaysSkippedDay_isDanger() {
         let h = mondayHabit() // never completed → skip rate 1.0 on Mondays
+        // No completions/timestamps, so skips attribute to the habit's intended (reminder)
+        // time bucket — evening (18..<21 → index 4) — not the overnight sentinel (index 7).
+        h.reminderTime = Calendar.current.date(bySettingHour: 19, minute: 0, second: 0, of: asOf)
+        try? container.mainContext.save()
         let forecast = engine.forecast(habits: [h], asOf: asOf)
-        // Monday index 0, "no log" bucket index 7.
-        XCTAssertEqual(forecast.matrix[0][7], .danger)
+        // Monday index 0, evening bucket index 4.
+        XCTAssertEqual(forecast.matrix[0][4], .danger)
+        XCTAssertEqual(forecast.matrix[0][7], .noData) // overnight sentinel no longer used
         XCTAssertFalse(forecast.topRisks.isEmpty)
         XCTAssertEqual(forecast.topRisks.first?.level, .danger)
         XCTAssertEqual(forecast.topRisks.first?.weekday, 0)
-        XCTAssertEqual(forecast.topRisks.first?.bucket, 7)
+        XCTAssertEqual(forecast.topRisks.first?.bucket, 4)
     }
 
     @MainActor

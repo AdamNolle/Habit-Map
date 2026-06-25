@@ -63,7 +63,9 @@ public final class InsightsEngine {
         let today = cal.startOfDay(for: asOf)
         var insights: [Insight] = []
 
-        for habit in habits where !habit.isArchived && !habit.isPaused {
+        // Inverse habits (avoid-a-bad-habit) succeed precisely by NOT being logged,
+        // so a quiet stretch is a win — never an "idle, want to pause?" nudge.
+        for habit in habits where !habit.isArchived && !habit.isPaused && habit.type != .inverse {
             let completions = (habit.completions ?? [])
                 .filter { ($0.reps > 0) || ($0.slipped) }
                 .sorted { $0.date > $1.date }
@@ -144,6 +146,7 @@ public final class InsightsEngine {
         var insights: [Insight] = []
 
         for habit in habits where !habit.isArchived && !habit.isPaused {
+            let expectedBucket = Self.expectedBucket(for: habit, cal: cal)
             var buckets: [Int: (attempts: Int, skips: Int)] = [:]
             for offset in 1..<30 {
                 guard let day = cal.date(byAdding: .day, value: -offset, to: today) else { continue }
@@ -152,10 +155,14 @@ public final class InsightsEngine {
                 let completed = habit.progressFraction(on: day) >= 1.0
                 let completion = habit.completion(on: day)
                 let bucket: Int
-                if let logged = completion?.loggedAt, completed {
+                if completed, let logged = completion?.loggedAt {
                     bucket = Self.bucketIndex(for: logged, cal: cal)
+                } else if let expectedBucket {
+                    // Skipped (or completed without a timestamp): attribute the day to
+                    // the habit's expected time-of-day, not the "overnight" sentinel.
+                    bucket = expectedBucket
                 } else {
-                    bucket = 7
+                    continue  // No signal for when this habit belongs — don't fabricate a window.
                 }
                 let key = wd * 8 + bucket
                 var entry = buckets[key] ?? (0, 0)
@@ -206,6 +213,27 @@ public final class InsightsEngine {
         case 0..<3: return 6
         default: return 7
         }
+    }
+
+    /// The time-of-day bucket a *skipped* day should be attributed to — the time the
+    /// user intends to (or usually does) perform the habit. Used so that skips don't
+    /// all funnel into the "overnight" sentinel bucket.
+    ///
+    /// - Returns the bucket of `reminderTime` when set; otherwise the habit's modal
+    ///   completion bucket (the time it's most often logged) when there's enough
+    ///   history; otherwise `nil` so callers can avoid inventing a fake slip window.
+    public static func expectedBucket(for habit: Habit, cal: Calendar) -> Int? {
+        if let reminder = habit.reminderTime {
+            return bucketIndex(for: reminder, cal: cal)
+        }
+        var counts: [Int: Int] = [:]
+        for completion in (habit.completions ?? []) where completion.reps > 0 {
+            counts[bucketIndex(for: completion.loggedAt, cal: cal), default: 0] += 1
+        }
+        guard let modal = counts.max(by: { $0.value < $1.value }), modal.value >= 3 else {
+            return nil
+        }
+        return modal.key
     }
 
     public static func bucketLabel(_ bucket: Int) -> String {

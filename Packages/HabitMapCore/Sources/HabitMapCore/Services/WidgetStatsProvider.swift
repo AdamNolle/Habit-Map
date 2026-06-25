@@ -24,6 +24,13 @@ public struct WidgetSnapshot: Sendable, Equatable, Codable {
         consistencyPct: 72, currentStreak: 5, todayDone: 3, todayTotal: 4, accentHex: "#2BFF5F"
     )
 
+    /// Neutral, all-zero snapshot. Rendered when the shared App-Group store is
+    /// unavailable so the widget shows an honest empty state instead of fabricated
+    /// (gallery) numbers.
+    public static let empty = WidgetSnapshot(
+        consistencyPct: 0, currentStreak: 0, todayDone: 0, todayTotal: 0, accentHex: "#2BFF5F"
+    )
+
     public var todayComplete: Bool { todayTotal > 0 && todayDone >= todayTotal }
 
     public var todayFraction: Double {

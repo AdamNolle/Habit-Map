@@ -9,6 +9,7 @@ public struct SlipFeatures: Sendable, Equatable, Codable {
 
     public let perHabit: [HabitFeatures]
     public let weekdayCompletion: [Double]    // 7 entries, Mon..Sun, 0..1
+    public let weekdayAttempts: [Int]         // 7 entries, Mon..Sun — scheduled attempts per weekday
     public let topSlipWindows: [SlipWindow]
     public let idleHabits: [String]
     public let strongPairs: [HabitPair]
@@ -21,6 +22,7 @@ public struct SlipFeatures: Sendable, Equatable, Codable {
                 consistencyPct: Double,
                 perHabit: [HabitFeatures],
                 weekdayCompletion: [Double],
+                weekdayAttempts: [Int] = [],
                 topSlipWindows: [SlipWindow],
                 idleHabits: [String],
                 strongPairs: [HabitPair],
@@ -32,6 +34,7 @@ public struct SlipFeatures: Sendable, Equatable, Codable {
         self.consistencyPct = consistencyPct
         self.perHabit = perHabit
         self.weekdayCompletion = weekdayCompletion
+        self.weekdayAttempts = weekdayAttempts
         self.topSlipWindows = topSlipWindows
         self.idleHabits = idleHabits
         self.strongPairs = strongPairs
@@ -42,6 +45,7 @@ public struct SlipFeatures: Sendable, Equatable, Codable {
     public static let empty = SlipFeatures(
         windowDays: 30, totalScheduled: 0, totalCompleted: 0, consistencyPct: 0,
         perHabit: [], weekdayCompletion: Array(repeating: 0, count: 7),
+        weekdayAttempts: Array(repeating: 0, count: 7),
         topSlipWindows: [], idleHabits: [], strongPairs: [],
         recoveryDaysAverage: 0, streakBreakSignals: []
     )
