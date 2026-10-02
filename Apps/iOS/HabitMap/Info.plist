@@ -25,7 +25,7 @@
 	<key>CFBundleVersion</key>
 	<string>9</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Habit Map reads workouts, steps, mindful minutes, sleep, and stand hours to auto-fill habits you've linked to Apple Health. We never store the raw values — only whether your goal was hit.</string>
+	<string>Habit Map reads workouts, steps, mindful minutes, sleep, and stand hours to auto-fill habits you've linked to Apple Health. Daily totals are saved locally with your habit completions.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Not used. Habit Map is read-only for Apple Health.</string>
 	<key>NSSupportsLiveActivities</key>

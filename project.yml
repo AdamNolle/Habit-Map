@@ -67,7 +67,7 @@ targets:
           - Fonts/Inter-Regular.ttf
           - Fonts/JetBrainsMono-Regular.ttf
           - Fonts/Silkscreen-Regular.ttf
-        NSHealthShareUsageDescription: "Habit Map reads workouts, steps, mindful minutes, sleep, and stand hours to auto-fill habits you've linked to Apple Health. We never store the raw values — only whether your goal was hit."
+        NSHealthShareUsageDescription: "Habit Map reads workouts, steps, mindful minutes, sleep, and stand hours to auto-fill habits you've linked to Apple Health. Daily totals are saved locally with your habit completions."
         NSHealthUpdateUsageDescription: "Not used. Habit Map is read-only for Apple Health."
     entitlements:
       path: Apps/iOS/HabitMap/HabitMap.entitlements
