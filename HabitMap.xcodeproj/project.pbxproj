@@ -24,6 +24,7 @@
 		35CEFC2C0F66B1CEB4D8EE48 /* EmojiPickerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF46C5C2A08D368DCAD9721C /* EmojiPickerTests.swift */; };
 		38911B07206BFBAC2ECCA6EC /* SlipFeaturesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD78CEB593523EB8E3060894 /* SlipFeaturesTests.swift */; };
 		39450D2EEF7DE83C4F7C328D /* PageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05ADF44465ADB3148250823 /* PageContentView.swift */; };
+		3B2B1987240927549DDEE1D5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E9A55991F9968AC2EDBFD811 /* PrivacyInfo.xcprivacy */; };
 		3D0C82F39E6EA876084FEEEC /* HealthKitServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47FC7CD6F121A9163A637181 /* HealthKitServiceTests.swift */; };
 		3D5180B605977B4349776A0D /* StepsActivityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F43BC918A92FF5F43BA12F2 /* StepsActivityTests.swift */; };
 		3EA3AECFA11EACC3613615D2 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407A727FE9DD2728BAF8EA77 /* InsightsView.swift */; };
@@ -247,6 +248,7 @@
 		DCA18B18028CE107F9D07F71 /* InsightCardSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightCardSnapshotTests.swift; sourceTree = "<group>"; };
 		E6E303787AAF79F1E09F45C3 /* AboutSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSection.swift; sourceTree = "<group>"; };
 		E747DC1AAA9A4FBA666A5EB1 /* HabitRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitRepositoryTests.swift; sourceTree = "<group>"; };
+		E9A55991F9968AC2EDBFD811 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E9A6A77B9FAC10693177FCB8 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		EB4431BA3EA255EC3438DD0D /* ColorHexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorHexTests.swift; sourceTree = "<group>"; };
 		EF46C5C2A08D368DCAD9721C /* EmojiPickerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerTests.swift; sourceTree = "<group>"; };
@@ -342,6 +344,7 @@
 				25F2C19BE624A35996F3DCEE /* HabitMap.entitlements */,
 				CA38D53212FC1844B646528A /* HabitMapApp.swift */,
 				918E28AE500178239BCE50AC /* Info.plist */,
+				E9A55991F9968AC2EDBFD811 /* PrivacyInfo.xcprivacy */,
 				50BA83CF73C06FC537F34EBF /* Components */,
 				D96882A783657365E1EAC5B7 /* Resources */,
 				015ACAEF8ADE8FE7614C6611 /* Screens */,
@@ -711,6 +714,7 @@
 				8BBD56B21FF8BCA7D3FC11BE /* InstrumentSerif-Regular.ttf in Resources */,
 				071EE46FE38E41999992CB65 /* Inter-Regular.ttf in Resources */,
 				56C14DC7AE88AE1D097BD9A4 /* JetBrainsMono-Regular.ttf in Resources */,
+				3B2B1987240927549DDEE1D5 /* PrivacyInfo.xcprivacy in Resources */,
 				C283C311232CB8C5E17A2308 /* Silkscreen-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
